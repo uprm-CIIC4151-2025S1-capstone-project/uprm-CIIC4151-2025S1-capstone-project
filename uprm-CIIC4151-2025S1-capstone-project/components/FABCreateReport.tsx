@@ -23,7 +23,6 @@ export default function FABCreateReport({
       onPress={onPress}
       accessibilityLabel="Create new report"
       accessibilityHint="Opens the report submission form"
-      accessibilityRole="button"
       color={colors.button.text}
       testID={testID}
     />
