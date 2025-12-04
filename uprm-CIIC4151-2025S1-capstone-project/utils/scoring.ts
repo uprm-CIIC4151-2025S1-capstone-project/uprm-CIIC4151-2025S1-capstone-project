@@ -1,12 +1,13 @@
 // utils/scoring.ts
 import { ReportStatus } from "@/types/interfaces";
 
+// Solo los estados REALES del reporte
 export const STATUS_SCORES: Record<ReportStatus, number> = {
   [ReportStatus.RESOLVED]: 5,
-  [ReportStatus.CLOSED]: 4,
   [ReportStatus.IN_PROGRESS]: 3,
   [ReportStatus.OPEN]: 2,
   [ReportStatus.DENIED]: 1,
+  [ReportStatus.CLOSED]: 0,
 };
 
 export const MAX_SCORE_PER_REPORT = 5;

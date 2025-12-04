@@ -5,7 +5,7 @@ import { ReportStatus } from "@/types/interfaces";
 import { calculateResolutionScore, STATUS_SCORES } from "@/utils/scoring";
 
 interface SystemStatsCardProps {
-  stats: any; // Puedes tipar esto mejor con OverviewStats
+  stats: any;
 }
 
 export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
@@ -13,16 +13,26 @@ export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
 
   if (!stats) return null;
 
-  // Extraer valores con defaults
+  // Extraer valores
   const totalReports = stats.total_reports || 0;
   const openReports = stats.open_reports || 0;
   const inProgressReports = stats.in_progress_reports || 0;
   const resolvedReports = stats.resolved_reports || 0;
   const deniedReports = stats.denied_reports || 0;
-  const closedReports = stats.closed_reports || 0;
+  const closedReports = stats.closed_reports || 0; // Suma de resolved + denied
   const pinnedReports = stats.pinned_reports_count || 0;
 
-  // Crear distribución por estado para scoring
+  // Verificar que closed sea consistente
+  const calculatedClosed = resolvedReports + deniedReports;
+  const displayClosed = closedReports > 0 ? closedReports : calculatedClosed;
+
+  // Calcular total real (debe coincidir con total_reports del backend)
+  const calculatedTotal = openReports + inProgressReports + displayClosed;
+
+  // Usar total del backend si está disponible, sino calcularlo
+  const displayTotal = totalReports > 0 ? totalReports : calculatedTotal;
+
+  // Distribución para scoring (sin "closed" porque es suma)
   const statusDistribution = {
     [ReportStatus.OPEN]: openReports,
     [ReportStatus.IN_PROGRESS]: inProgressReports,
@@ -31,14 +41,13 @@ export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
     [ReportStatus.CLOSED]: closedReports,
   };
 
-  // Calcular métricas de resolución
   const resolutionMetrics = calculateResolutionScore(statusDistribution);
 
-  // Configurar estadísticas para el componente base
+  // Stats para mostrar
   const statsData: StatsCardProps["stats"] = [
     {
       label: "Total",
-      value: totalReports,
+      value: displayTotal,
       color: colors.primary,
       description: "All reports",
     },
@@ -47,6 +56,12 @@ export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
       value: resolvedReports,
       color: colors.success,
       description: `+${STATUS_SCORES[ReportStatus.RESOLVED]} pts`,
+    },
+    {
+      label: "Closed",
+      value: displayClosed,
+      color: "#673AB7",
+      description: "Resolved + Denied",
     },
     {
       label: "In Progress",
@@ -61,12 +76,6 @@ export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
       description: `+${STATUS_SCORES[ReportStatus.OPEN]} pts`,
     },
     {
-      label: "Closed",
-      value: closedReports,
-      color: "#673AB7",
-      description: `+${STATUS_SCORES[ReportStatus.CLOSED]} pts`,
-    },
-    {
       label: "Denied",
       value: deniedReports,
       color: colors.error,
@@ -74,7 +83,6 @@ export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
     },
   ];
 
-  // Configurar items adicionales del footer (estadísticas del sistema)
   const additionalFooterItems: StatsCardProps["additionalFooterItems"] = [
     {
       icon: "account-group",
@@ -93,6 +101,12 @@ export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
       label: "Pinned",
       value: pinnedReports,
       color: "#9C27B0",
+    },
+    {
+      icon: "chart-pie",
+      label: "Resolution Rate",
+      value: `${Math.round((displayClosed / displayTotal) * 100) || 0}%`,
+      color: colors.success,
     },
   ];
 

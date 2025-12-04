@@ -5,14 +5,14 @@ import { ReportStatus } from "@/types/interfaces";
 import { calculateResolutionScore, STATUS_SCORES } from "@/utils/scoring";
 
 export interface UserStatsCardProps {
-  filed: number;
-  resolved: number;
-  pending: number;
-  pinned: number;
+  filed: number; // total_reports
+  resolved: number; // resolved_reports
+  pending: number; // open_reports
+  pinned: number; // pinned_reports_count
   lastReportDate: string | null;
-  inProgress?: number;
-  denied?: number;
-  closed?: number;
+  inProgress?: number; // in_progress_reports
+  denied?: number; // denied_reports
+  closed?: number; // closed_reports (resolved + denied)
 }
 
 export default function UserStatsCard({
@@ -27,7 +27,15 @@ export default function UserStatsCard({
 }: UserStatsCardProps) {
   const { colors } = useAppColors();
 
-  // Crear distribución por estado para scoring
+  // VERIFICACIÓN: closed debe ser igual a resolved + denied
+  const calculatedClosed = resolved + denied;
+  const displayClosed = closed > 0 ? closed : calculatedClosed;
+
+  // Calcular total real
+  const totalReports = pending + inProgress + displayClosed;
+
+  // Crear distribución por estado REAL para scoring
+  // NOTA: No incluimos "closed" porque es solo una suma
   const statusDistribution = {
     [ReportStatus.OPEN]: pending,
     [ReportStatus.IN_PROGRESS]: inProgress,
@@ -38,9 +46,6 @@ export default function UserStatsCard({
 
   // Calcular métricas de resolución
   const resolutionMetrics = calculateResolutionScore(statusDistribution);
-
-  // Calcular total de reportes
-  const totalReports = pending + inProgress + resolved + denied + closed;
 
   // Configurar estadísticas para el componente base
   const stats: StatsCardProps["stats"] = [
@@ -57,6 +62,12 @@ export default function UserStatsCard({
       description: `+${STATUS_SCORES[ReportStatus.RESOLVED]} pts`,
     },
     {
+      label: "Closed",
+      value: displayClosed,
+      color: "#673AB7",
+      description: "Resolved + Denied",
+    },
+    {
       label: "In Progress",
       value: inProgress,
       color: colors.info,
@@ -69,12 +80,6 @@ export default function UserStatsCard({
       description: `+${STATUS_SCORES[ReportStatus.OPEN]} pts`,
     },
     {
-      label: "Closed",
-      value: closed,
-      color: "#673AB7",
-      description: `+${STATUS_SCORES[ReportStatus.CLOSED]} pts`,
-    },
-    {
       label: "Denied",
       value: denied,
       color: colors.error,
@@ -82,7 +87,7 @@ export default function UserStatsCard({
     },
   ];
 
-  // Configurar items adicionales del footer (detalles personales)
+  // Configurar items adicionales del footer
   const additionalFooterItems: StatsCardProps["additionalFooterItems"] = [
     {
       icon: "pin",
@@ -97,6 +102,12 @@ export default function UserStatsCard({
         ? new Date(lastReportDate).toLocaleDateString()
         : "Never",
       color: colors.textSecondary,
+    },
+    {
+      icon: "chart-pie",
+      label: "Resolution Rate",
+      value: `${Math.round((displayClosed / totalReports) * 100) || 0}%`,
+      color: colors.success,
     },
   ];
 

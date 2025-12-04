@@ -2,8 +2,8 @@ import AdminStats from "@/components/AdminStats";
 import NoActivityState from "@/components/NoActivityState";
 import ProfileErrorState from "@/components/ProfileErrorState";
 import RecentActivitySection from "@/components/RecentActivitySection";
-import UserStatsCard from "@/components/UserStatsCard"; // ← Corregido
-import SystemStatsCard from "@/components/SystemStatsCard"; // ← Corregido
+import UserStatsCard from "@/components/UserStatsCard";
+import SystemStatsCard from "@/components/SystemStatsCard";
 import StatsSwitchCard from "@/components/StatsSwitchCard";
 import UserCard from "@/components/UserCard";
 import { useAppColors } from "@/hooks/useAppColors";
@@ -11,14 +11,14 @@ import { type ReportData, type UserSession } from "@/types/interfaces";
 import {
   getAdminStats,
   getOverviewStats,
-  getReports,
+  getUserReports,
   getUserStats,
 } from "@/utils/api";
 import { getStoredCredentials } from "@/utils/auth";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { ActivityIndicator, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
@@ -28,24 +28,23 @@ export default function ProfileScreen() {
   const [userStats, setUserStats] = useState<any>(null);
   const [adminStats, setAdminStats] = useState<any>(null);
   const [systemStats, setSystemStats] = useState<any>(null);
-  const [allReports, setAllReports] = useState<ReportData[]>([]);
+  const [userRecentReports, setUserRecentReports] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [showSystemStats, setShowSystemStats] = useState(false);
   const [expandedRecentActivity, setExpandedRecentActivity] = useState(false);
 
   const loadProfileData = async () => {
     try {
-      setError("");
+      setError(null);
       setLoading(true);
 
       const credentials = await getStoredCredentials();
 
       if (!credentials) {
-        setError("Please log in to view profile");
-        setLoading(false);
-        setRefreshing(false);
+        // Esto no debería pasar si siempre hay login, pero por seguridad
+        router.replace("/");
         return;
       }
 
@@ -58,11 +57,10 @@ export default function ProfileScreen() {
       };
       setUser(userData);
 
-      // Cargar datos en paralelo con valores por defecto
-      const [statsData, reportsData, systemStatsData] = await Promise.all([
+      // Cargar datos en paralelo
+      const [statsData, userReportsData, systemStatsData] = await Promise.all([
         getUserStats(userData.id).catch((err) => {
           console.warn("Failed to load user stats:", err);
-          // Valores por defecto para el scoring
           return {
             total_reports: 0,
             open_reports: 0,
@@ -75,13 +73,13 @@ export default function ProfileScreen() {
             last_report_date: null,
           };
         }),
-        getReports(1, 100).catch((err) => {
-          console.warn("Failed to load reports:", err);
-          return { reports: [] };
+        // Solo obtenemos los reportes del usuario
+        getUserReports(userData.id, 1, 10).catch((err) => {
+          console.warn("Failed to load user reports:", err);
+          return { reports: [], total: 0, page: 1, limit: 10 };
         }),
         getOverviewStats().catch((err) => {
           console.warn("Failed to load system stats:", err);
-          // Valores por defecto para el scoring del sistema
           return {
             total_reports: 0,
             open_reports: 0,
@@ -98,7 +96,7 @@ export default function ProfileScreen() {
 
       setUserStats(statsData);
       setSystemStats(systemStatsData);
-      setAllReports(reportsData.reports || []);
+      setUserRecentReports(userReportsData.reports || []);
 
       if (userData.admin) {
         try {
@@ -106,7 +104,6 @@ export default function ProfileScreen() {
           setAdminStats(adminStatsData);
         } catch (err) {
           console.warn("Failed to load admin stats:", err);
-          // Valores por defecto para admin
           setAdminStats({
             total_assigned_reports: 0,
             in_progress_reports: 0,
@@ -116,14 +113,7 @@ export default function ProfileScreen() {
       }
     } catch (err: any) {
       console.error("Error loading profile data:", err);
-      if (
-        err.message?.includes("not authenticated") ||
-        err.message?.includes("User ID")
-      ) {
-        setError("Please log in to view profile");
-      } else {
-        setError(err.message || "Failed to load profile data");
-      }
+      setError(err.message || "Failed to load profile data");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -150,20 +140,14 @@ export default function ProfileScreen() {
     setExpandedRecentActivity(!expandedRecentActivity);
   };
 
-  const getUserSpecificStats = () => {
-    if (!user || !allReports.length) {
-      return { lastThreeVisited: [] };
+  // Obtener solo los primeros 3 reportes para la vista collapsed
+  const getRecentActivityReports = () => {
+    if (expandedRecentActivity) {
+      return userRecentReports;
     }
-    const userReports = allReports.filter(
-      (report) => report.created_by === user.id
-    );
-    return {
-      lastThreeVisited: userReports.slice(0, 3),
-    };
+    return userRecentReports.slice(0, 3);
   };
 
-  const userSpecificStats = getUserSpecificStats();
-  const handleLoginRedirect = () => router.replace("/");
   const styles = createStyles(colors);
 
   if (loading) {
@@ -172,29 +156,6 @@ export default function ProfileScreen() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading profile...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error && error.includes("log in")) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loginContainer}>
-          <Text variant="headlineMedium" style={styles.header}>
-            Profile
-          </Text>
-          <Text variant="bodyMedium" style={styles.loginSubtitle}>
-            Please log in to view your profile
-          </Text>
-          <Button
-            mode="contained"
-            onPress={handleLoginRedirect}
-            style={styles.loginButton}
-            textColor={colors.button.text}
-          >
-            Sign In
-          </Button>
         </View>
       </SafeAreaView>
     );
@@ -218,7 +179,7 @@ export default function ProfileScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        {error && !error.includes("log in") ? (
+        {error ? (
           <ProfileErrorState error={error} onRetry={loadProfileData} />
         ) : (
           <>
@@ -230,9 +191,9 @@ export default function ProfileScreen() {
             />
 
             {showSystemStats ? (
-              <SystemStatsCard stats={systemStats} /> // ← Corregido
+              <SystemStatsCard stats={systemStats} />
             ) : (
-              <UserStatsCard // ← Corregido
+              <UserStatsCard
                 filed={userStats?.total_reports || 0}
                 resolved={userStats?.resolved_reports || 0}
                 pending={userStats?.open_reports || 0}
@@ -253,15 +214,13 @@ export default function ProfileScreen() {
             )}
 
             <RecentActivitySection
-              reports={userSpecificStats.lastThreeVisited}
+              reports={getRecentActivityReports()}
               expanded={expandedRecentActivity}
               onToggle={handleToggleRecentActivity}
               onReportPress={handleReportPress}
             />
 
-            {!error && userSpecificStats.lastThreeVisited.length === 0 && (
-              <NoActivityState />
-            )}
+            {!error && userRecentReports.length === 0 && <NoActivityState />}
           </>
         )}
       </ScrollView>
@@ -294,21 +253,5 @@ const createStyles = (colors: any) =>
     },
     loadingText: {
       color: colors.text,
-    },
-    loginContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 24,
-      gap: 16,
-    },
-    loginSubtitle: {
-      textAlign: "center",
-      color: colors.textSecondary,
-      marginBottom: 8,
-    },
-    loginButton: {
-      marginTop: 16,
-      backgroundColor: colors.button.primary,
     },
   });
