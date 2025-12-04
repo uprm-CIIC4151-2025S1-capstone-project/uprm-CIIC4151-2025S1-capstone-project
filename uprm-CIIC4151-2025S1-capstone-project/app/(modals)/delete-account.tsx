@@ -1,11 +1,11 @@
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Text, Button, Card, TextInput } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
-import { getStoredCredentials, completeLogout } from "@/utils/auth";
-import { useRouter } from "expo-router";
-import { deleteUser } from "@/utils/api";
 import { useAppColors } from "@/hooks/useAppColors";
+import { deleteUser } from "@/utils/api";
+import { completeLogout, getStoredCredentials } from "@/utils/auth";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, Card, Text, TextInput } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DeleteAccountModal() {
   const router = useRouter();

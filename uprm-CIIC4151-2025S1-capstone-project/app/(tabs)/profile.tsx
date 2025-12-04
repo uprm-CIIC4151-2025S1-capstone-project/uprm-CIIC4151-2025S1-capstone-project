@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, RefreshControl, View } from "react-native";
-import { Text, ActivityIndicator, Button } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Componentes
 import AdminStats from "@/components/AdminStats";
+import NoActivityState from "@/components/NoActivityState";
+import ProfileErrorState from "@/components/ProfileErrorState";
+import RecentActivitySection from "@/components/RecentActivitySection";
 import ReportStats from "@/components/ReportStats";
 import StatsOverviewCard from "@/components/StatsOverviewCard";
-import UserCard from "@/components/UserCard";
 import StatsSwitchCard from "@/components/StatsSwitchCard";
-import RecentActivitySection from "@/components/RecentActivitySection";
-import ProfileErrorState from "@/components/ProfileErrorState";
-import NoActivityState from "@/components/NoActivityState";
+import UserCard from "@/components/UserCard";
 
 // Utils
+import { useAppColors } from "@/hooks/useAppColors";
+import { type ReportData, type UserSession } from "@/types/interfaces";
 import {
-  getUserStats,
-  getReports,
   getAdminStats,
   getOverviewStats,
+  getReports,
+  getUserStats,
 } from "@/utils/api";
 import { getStoredCredentials } from "@/utils/auth";
-import { type ReportData, type UserSession } from "@/types/interfaces";
-import { useAppColors } from "@/hooks/useAppColors";
 
 export default function ProfileScreen() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import { ThemedView } from "@/components/themed-view";
 import { useAppColors } from "@/hooks/useAppColors";
-import { StyleSheet, View, ScrollView, Linking } from "react-native";
-import { Button, Text, Divider } from "react-native-paper";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Divider, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PrivacyPolicyModal() {

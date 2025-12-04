@@ -1,7 +1,6 @@
-import { Platform } from "react-native";
-import type { ReportFormData } from "@/types/interfaces";
+import type { AdminInfo, ReportFormData } from "@/types/interfaces";
 import { getStoredCredentials } from "@/utils/auth";
-import type { AdminInfo } from "@/types/interfaces";
+import { Platform } from "react-native";
 
 // =============================================================================
 // BASE URL (per platform)
@@ -52,11 +51,7 @@ export async function uploadImageFromUri(uri: string): Promise<string> {
   const ext = extMatch?.[1]?.toLowerCase();
 
   const mimeType =
-    ext === "png"
-      ? "image/png"
-      : ext === "webp"
-      ? "image/webp"
-      : "image/jpeg";
+    ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
 
   formData.append("image", {
     uri,
@@ -246,7 +241,7 @@ export async function createReport(data: ReportFormData) {
     ...data,
     user_id: creds.userId,
     image_url: data.image_url?.trim() || null,
-  location_id: data.location_id ?? null,
+    location_id: data.location_id ?? null,
   };
 
   return request("/reports", "POST", payload);
@@ -277,10 +272,7 @@ export async function resolveReport(
   return request(`/reports/${reportId}/resolve`, "POST", data);
 }
 
-export async function rateReport(
-  reportId: number,
-  data: { rating: number }
-) {
+export async function rateReport(reportId: number, data: { rating: number }) {
   return request(`/reports/${reportId}/rate`, "POST", data);
 }
 
@@ -574,14 +566,10 @@ export async function getPinnedReports(
   return request(`/pinned-reports?${qs.toString()}`);
 }
 
-export async function pinReport(data: {
-  user_id: number;
-  report_id: number;
-}) {
+export async function pinReport(data: { user_id: number; report_id: number }) {
   const creds = await getStoredCredentials();
   if (!creds) throw new Error("Not authenticated");
-  if (creds.userId !== data.user_id)
-    throw new Error("User ID mismatch");
+  if (creds.userId !== data.user_id) throw new Error("User ID mismatch");
 
   return request("/pinned-reports", "POST", data);
 }
@@ -589,8 +577,7 @@ export async function pinReport(data: {
 export async function unpinReport(userId: number, reportId: number) {
   const creds = await getStoredCredentials();
   if (!creds) throw new Error("Not authenticated");
-  if (creds.userId !== userId)
-    throw new Error("User ID mismatch");
+  if (creds.userId !== userId) throw new Error("User ID mismatch");
 
   const qs = new URLSearchParams();
   qs.append("user_id", userId.toString());
@@ -617,20 +604,15 @@ export async function getUserPinnedReports(
 export async function checkPinnedStatus(userId: number, reportId: number) {
   const creds = await getStoredCredentials();
   if (!creds) throw new Error("Not authenticated");
-  if (creds.userId !== userId)
-    throw new Error("User ID mismatch");
+  if (creds.userId !== userId) throw new Error("User ID mismatch");
 
   return request(`/pinned-reports/check/${userId}/${reportId}`);
 }
 
-export async function getPinnedReportDetail(
-  userId: number,
-  reportId: number
-) {
+export async function getPinnedReportDetail(userId: number, reportId: number) {
   const creds = await getStoredCredentials();
   if (!creds) throw new Error("Not authenticated");
-  if (creds.userId !== userId)
-    throw new Error("User ID mismatch");
+  if (creds.userId !== userId) throw new Error("User ID mismatch");
 
   return request(`/pinned-reports/${userId}/${reportId}/details`);
 }
@@ -649,8 +631,7 @@ export async function getDepartmentOverviewStats(department: string) {
 export async function getUserStats(userId: number) {
   const creds = await getStoredCredentials();
   if (!creds) throw new Error("Not authenticated");
-  if (creds.userId !== userId)
-    throw new Error("User ID mismatch");
+  if (creds.userId !== userId) throw new Error("User ID mismatch");
 
   return request(`/stats/user/${userId}`);
 }
@@ -793,7 +774,6 @@ export async function changeReportStatus(
 export async function getStatusOptions() {
   return request("/reports/status-options");
 }
-
 
 // TODO Get location details with address
 export async function getLocationDetails(locationId: number): Promise<{

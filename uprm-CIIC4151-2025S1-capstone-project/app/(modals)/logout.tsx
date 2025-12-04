@@ -1,10 +1,10 @@
-import { View, StyleSheet } from "react-native";
-import { Text, Button, Card } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useAppColors } from "@/hooks/useAppColors";
 import { completeLogout, getStoredCredentials } from "@/utils/auth";
 import { useRouter } from "expo-router";
-import { useAppColors } from "@/hooks/useAppColors";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, Card, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LogoutModal() {
   const router = useRouter();

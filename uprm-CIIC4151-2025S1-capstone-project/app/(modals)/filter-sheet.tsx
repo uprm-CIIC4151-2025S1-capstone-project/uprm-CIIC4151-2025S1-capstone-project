@@ -1,4 +1,5 @@
 // components/modals/filter-sheet.tsx
+import { useAppColors } from "@/hooks/useAppColors";
 import React, { useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
@@ -10,7 +11,6 @@ import {
   RadioButton,
   Text,
 } from "react-native-paper";
-import { useAppColors } from "@/hooks/useAppColors";
 
 // Shared filter types (we'll import these in explore.tsx)
 export type StatusFilter = "" | "open" | "in_progress" | "resolved" | "denied";

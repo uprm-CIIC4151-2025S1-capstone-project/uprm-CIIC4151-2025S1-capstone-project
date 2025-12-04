@@ -1,9 +1,9 @@
 import { ThemedView } from "@/components/themed-view";
-import { StyleSheet, ScrollView, Linking, Alert } from "react-native";
-import { Button, Text, Card, Divider } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { getStoredCredentials } from "@/utils/auth";
 import { useAppColors } from "@/hooks/useAppColors";
+import { getStoredCredentials } from "@/utils/auth";
+import { Alert, Linking, ScrollView, StyleSheet } from "react-native";
+import { Button, Card, Divider, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ContactSupportModal() {
   const { colors } = useAppColors();

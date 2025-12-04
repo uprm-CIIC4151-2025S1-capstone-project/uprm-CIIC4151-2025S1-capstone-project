@@ -1,7 +1,7 @@
 import { ThemedView } from "@/components/themed-view";
 import { useAppColors } from "@/hooks/useAppColors";
-import { StyleSheet, View, ScrollView } from "react-native";
-import { List, Text, Divider } from "react-native-paper";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AboutUsModal() {

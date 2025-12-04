@@ -1,15 +1,15 @@
 // app/(tabs)/explore.tsx
 import FABCreateReport from "@/components/FABCreateReport";
-import { getStoredCredentials } from "@/utils/auth";
 import ReportCard from "@/components/ReportCard";
 import { useAppColors } from "@/hooks/useAppColors";
 import type { ReportCategory, ReportData } from "@/types/interfaces";
 import {
+  checkUserIsAdministrator,
   filterReports,
   getReports,
   searchReports,
-  checkUserIsAdministrator,
 } from "@/utils/api";
+import { getStoredCredentials } from "@/utils/auth";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
@@ -23,9 +23,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import FilterSheetModal, {
-  StatusFilter,
   CategoryFilter,
   SortOrder,
+  StatusFilter,
 } from "../(modals)/filter-sheet";
 
 /** API response shape used by /reports, /reports/search, /reports/filter */
@@ -99,9 +99,7 @@ export default function ReportScreen() {
     const allowed = getDepartmentAllowedCategories(adminDepartment);
     if (!allowed.length) return list; // no mapping → show all
 
-    return list.filter((r) =>
-      allowed.includes(r.category as CategoryFilter)
-    );
+    return list.filter((r) => allowed.includes(r.category as CategoryFilter));
   };
 
   // -------------------------
@@ -295,13 +293,6 @@ export default function ReportScreen() {
 
   const handleCreateReport = () => {
     router.push("/(modals)/report-form");
-  };
-
-  const onSelectFilter = (value: StatusFilter) => {
-    setMenuVisible(false);
-    setStatusFilter(value);
-    // when changing the filter, clear search
-    if (query) setQuery("");
   };
 
   const renderReportItem = ({ item }: { item: ReportData }) => (
@@ -504,11 +495,5 @@ const createStyles = (colors: any) =>
       textAlign: "center",
       fontSize: 14,
       color: colors.textMuted,
-    },
-    fab: {
-      position: "absolute",
-      margin: 16,
-      right: 0,
-      bottom: 0,
     },
   });

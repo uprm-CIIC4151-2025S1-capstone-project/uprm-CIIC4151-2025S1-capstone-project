@@ -1,7 +1,7 @@
 import { useAppColors } from "@/hooks/useAppColors";
 import { useRouter } from "expo-router";
-import { StyleSheet, ScrollView } from "react-native";
-import { List, Text, Divider } from "react-native-paper";
+import { ScrollView, StyleSheet } from "react-native";
+import { Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {

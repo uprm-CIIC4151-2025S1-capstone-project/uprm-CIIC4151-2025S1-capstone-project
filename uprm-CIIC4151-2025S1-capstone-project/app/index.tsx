@@ -7,7 +7,6 @@ import { StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
 export default function IndexScreen() {
   const [isLogin, setIsLogin] = useState(true);
   const router = useRouter();

@@ -1,29 +1,29 @@
 // app/(modals)/report-view.tsx
+import { ReportActionBar } from "@/components/ReportActionBar";
+import { ReportDetails } from "@/components/ReportDetails";
 import { ThemedView } from "@/components/themed-view";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useAppColors } from "@/hooks/useAppColors";
+import { useAuth } from "@/hooks/useAuth";
+import type { ReportData, ReportStatus } from "@/types/interfaces";
 import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Image,
-  RefreshControl,
-} from "react-native";
-import { Button, Text, ActivityIndicator, Snackbar } from "react-native-paper";
-import { useEffect, useState } from "react";
-import {
-  getReport,
   buildImageUrl,
-  togglePinReport,
-  toggleRating,
   changeReportStatus,
   checkReportPinned,
   checkReportRated,
+  getReport,
+  togglePinReport,
+  toggleRating,
 } from "@/utils/api";
-import type { ReportData, ReportStatus } from "@/types/interfaces";
-import { useAppColors } from "@/hooks/useAppColors";
-import { useAuth } from "@/hooks/useAuth";
-import { ReportActionBar } from "@/components/ReportActionBar";
-import { ReportDetails } from "@/components/ReportDetails";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  Image,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { ActivityIndicator, Button, Snackbar, Text } from "react-native-paper";
 
 export default function ReportViewModal() {
   const router = useRouter();

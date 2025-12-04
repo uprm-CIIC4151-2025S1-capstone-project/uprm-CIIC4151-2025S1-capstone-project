@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { ActivityIndicator, Text, DataTable } from "react-native-paper";
-import { getLocationsWithReports } from "@/utils/api"; // adjust path
 import type { LocationWithReports } from "@/types/interfaces"; // adjust path
+import { getLocationsWithReports } from "@/utils/api"; // adjust path
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, DataTable, Text } from "react-native-paper";
 
 export default function ViewMapScreen() {
   const [locations, setLocations] = useState<LocationWithReports[]>([]);

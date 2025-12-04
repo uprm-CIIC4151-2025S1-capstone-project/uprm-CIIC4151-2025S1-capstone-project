@@ -1,10 +1,10 @@
 import { ThemedView } from "@/components/themed-view";
-import { useRouter } from "expo-router";
-import { StyleSheet, ScrollView, Alert, Switch, View } from "react-native";
-import { Text, List, Divider } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
 import { useAppColors } from "@/hooks/useAppColors";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Alert, ScrollView, StyleSheet, Switch, View } from "react-native";
+import { Divider, List, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AccountSecurityModal() {
   const router = useRouter();

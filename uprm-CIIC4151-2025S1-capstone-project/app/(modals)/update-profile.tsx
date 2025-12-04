@@ -1,12 +1,12 @@
 import { ThemedView } from "@/components/themed-view";
-import { useRouter } from "expo-router";
-import { StyleSheet, View, ScrollView, Alert } from "react-native";
-import { Button, Text, TextInput, Divider } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
-import { getStoredCredentials, saveCredentials } from "@/utils/auth";
-import { updateUser, upgradeToAdmin } from "@/utils/api";
 import { useAppColors } from "@/hooks/useAppColors";
+import { updateUser, upgradeToAdmin } from "@/utils/api";
+import { getStoredCredentials, saveCredentials } from "@/utils/auth";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Divider, Text, TextInput } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UpdateProfileModal() {
   const router = useRouter();

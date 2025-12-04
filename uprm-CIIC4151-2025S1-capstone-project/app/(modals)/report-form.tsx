@@ -1,13 +1,13 @@
 import ReportForm, { ReportFormRef } from "@/components/ReportForm";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { useRouter } from "expo-router";
-import { StyleSheet, Alert } from "react-native";
-import { createReport, uploadImageFromUri } from "@/utils/api";
-import type { ReportFormData } from "@/types/interfaces";
-import { getStoredCredentials } from "@/utils/auth";
-import { useState, useRef } from "react";
 import { useAppColors } from "@/hooks/useAppColors";
+import type { ReportFormData } from "@/types/interfaces";
+import { createReport, uploadImageFromUri } from "@/utils/api";
+import { getStoredCredentials } from "@/utils/auth";
+import { useRouter } from "expo-router";
+import { useRef, useState } from "react";
+import { Alert, StyleSheet } from "react-native";
 
 export default function ReportFormModal() {
   const router = useRouter();
