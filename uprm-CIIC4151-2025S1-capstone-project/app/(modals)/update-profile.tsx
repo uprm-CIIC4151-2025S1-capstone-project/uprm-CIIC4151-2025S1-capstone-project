@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { StyleSheet, View, ScrollView, Alert } from "react-native";
 import { Button, Text, TextInput, Divider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getStoredCredentials, saveCredentials } from "@/utils/auth";
 import { updateUser, upgradeToAdmin } from "@/utils/api";
 import { useAppColors } from "@/hooks/useAppColors";
@@ -13,45 +13,23 @@ export default function UpdateProfileModal() {
   const { colors } = useAppColors();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-    adminCode: "", // <- NEW
+    adminCode: "",
   });
   const [errors, setErrors] = useState({
-    email: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-
-  // Load user data when component mounts
-  useEffect(() => {
-    const loadUserData = async () => {
-      const credentials = await getStoredCredentials();
-      if (credentials) {
-        setFormData((prev) => ({
-          ...prev,
-          email: credentials.email || "",
-        }));
-      }
-    };
-    loadUserData();
-  }, []);
 
   const validateForm = () => {
     const newErrors = {
-      email: "",
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     };
-
-    // Email validation
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
 
     // Password change validation
     if (
@@ -75,8 +53,18 @@ export default function UpdateProfileModal() {
     return !Object.values(newErrors).some((error) => error !== "");
   };
 
-  const handleUpdateProfile = async () => {
+  const handleUpdatePassword = async () => {
     if (!validateForm()) {
+      return;
+    }
+
+    // If no password fields are filled, return early
+    if (
+      !formData.newPassword &&
+      !formData.confirmPassword &&
+      !formData.currentPassword
+    ) {
+      Alert.alert("No Changes", "Please enter your current and new password.");
       return;
     }
 
@@ -84,55 +72,54 @@ export default function UpdateProfileModal() {
     try {
       const credentials = await getStoredCredentials();
       if (!credentials) {
-        Alert.alert("Error", "Please log in to update your profile");
+        Alert.alert("Error", "Please log in to update your password");
         router.back();
         return;
       }
 
       const updateData: any = {};
 
-      // Only include fields that have been changed
-      if (formData.email && formData.email !== credentials.email) {
-        updateData.email = formData.email;
-      }
-
       if (formData.newPassword && formData.currentPassword) {
         updateData.current_password = formData.currentPassword;
         updateData.new_password = formData.newPassword;
       }
 
-      // If no changes, show message
-      if (Object.keys(updateData).length === 0) {
-        Alert.alert("No Changes", "No changes were made to your profile.");
-        return;
-      }
-
       const response = await updateUser(credentials.userId, updateData);
 
       if (response.success) {
-        // Update stored credentials if email was changed
-        if (updateData.email) {
+        // Update stored credentials if password was changed
+        if (updateData.new_password) {
           await saveCredentials(
             credentials.userId,
-            updateData.email,
-            formData.newPassword || credentials.password
+            credentials.email,
+            formData.newPassword,
+            credentials.admin,
+            credentials.suspended
           );
         }
 
-        Alert.alert("Success", "Profile updated successfully!", [
+        Alert.alert("Success", "Password updated successfully!", [
           {
             text: "OK",
-            onPress: () => router.back(),
+            onPress: () => {
+              // Clear password fields after successful update
+              setFormData((prev) => ({
+                ...prev,
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+              }));
+            },
           },
         ]);
       } else {
-        Alert.alert("Error", response.error_msg || "Failed to update profile");
+        Alert.alert("Error", response.error_msg || "Failed to update password");
       }
     } catch (error: any) {
-      console.error("Profile update error:", error);
+      console.error("Password update error:", error);
       Alert.alert(
         "Error",
-        error.message || "Failed to update profile. Please try again."
+        error.message || "Failed to update password. Please try again."
       );
     } finally {
       setLoading(false);
@@ -159,13 +146,21 @@ export default function UpdateProfileModal() {
       );
 
       if (res?.success) {
+        await saveCredentials(
+          credentials.userId,
+          credentials.email,
+          credentials.password,
+          true,
+          credentials.suspended
+        );
+
         Alert.alert(
           "Success",
           res.department
             ? `You have been upgraded to admin in ${res.department}.`
             : "You have been upgraded to admin."
         );
-        // Optionally reset the code box
+        // Reset the code box
         setFormData((prev) => ({ ...prev, adminCode: "" }));
       } else {
         Alert.alert("Invalid Code", res?.error_msg || "Code not recognized.");
@@ -198,38 +193,6 @@ export default function UpdateProfileModal() {
           <Text variant="headlineMedium" style={styles.title}>
             Update Profile
           </Text>
-
-          {/* Email Section */}
-          <View style={[styles.section, { borderLeftColor: colors.primary }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.primary }]}
-            >
-              Email Address
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              Update your email address. You&apos;ll need to verify the new
-              email address for security purposes.
-            </Text>
-
-            <TextInput
-              label="Email Address"
-              value={formData.email}
-              onChangeText={(value) => handleInputChange("email", value)}
-              mode="outlined"
-              disabled={loading}
-              style={styles.input}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              error={!!errors.email}
-              outlineColor={colors.input.border}
-              activeOutlineColor={colors.input.borderFocused}
-              textColor={colors.input.text}
-            />
-            {errors.email ? (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            ) : null}
-          </View>
 
           {/* Password Section */}
           <View style={[styles.section, { borderLeftColor: colors.info }]}>
@@ -298,7 +261,24 @@ export default function UpdateProfileModal() {
             {errors.confirmPassword ? (
               <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             ) : null}
+
+            <Button
+              mode="contained"
+              style={styles.actionButton}
+              disabled={
+                loading ||
+                (!formData.newPassword &&
+                  !formData.currentPassword &&
+                  !formData.confirmPassword)
+              }
+              onPress={handleUpdatePassword}
+              textColor={colors.button.text}
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </Button>
           </View>
+
+          <Divider style={styles.divider} />
 
           {/* Admin Upgrade Section */}
           <View style={[styles.section, { borderLeftColor: colors.warning }]}>
@@ -334,48 +314,7 @@ export default function UpdateProfileModal() {
               onPress={handleUpgradeToAdmin}
               textColor={colors.button.text}
             >
-              Verify & Upgrade
-            </Button>
-          </View>
-
-          <Divider style={styles.divider} />
-
-          {/* Security Tips */}
-          <View style={[styles.section, { borderLeftColor: colors.success }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.success }]}
-            >
-              Security Tips
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              • Use a strong, unique password that you don&apos;t use elsewhere
-              {"\n"}• Avoid using personal information like birthdays or names
-              {"\n"}• Consider using a password manager for better security
-              {"\n"}• Update your password regularly for maximum protection
-            </Text>
-          </View>
-
-          {/* Action Buttons */}
-          <View style={styles.actionButtons}>
-            <Button
-              mode="outlined"
-              onPress={() => router.back()}
-              disabled={loading}
-              style={styles.actionButton}
-              textColor={colors.text}
-            >
-              Cancel
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleUpdateProfile}
-              loading={loading}
-              disabled={loading}
-              style={styles.actionButton}
-              textColor={colors.button.text}
-            >
-              Update Profile
+              {loading ? "Verifying..." : "Verify & Upgrade"}
             </Button>
           </View>
         </ScrollView>
@@ -405,19 +344,12 @@ const createStyles = (colors: any) =>
       fontWeight: "bold",
       color: colors.text,
     },
-    introText: {
-      textAlign: "center",
-      lineHeight: 22,
-      color: colors.textSecondary,
-      marginBottom: 8,
-    },
     section: {
       backgroundColor: colors.surface,
       padding: 16,
       borderRadius: 8,
       borderLeftWidth: 4,
-      borderLeftColor: colors.primary,
-      boxShadow: `0px 1px 2px ${colors.shadow || "#0000001a"}`,
+      marginBottom: 16,
     },
     sectionTitle: {
       marginBottom: 12,
@@ -443,23 +375,7 @@ const createStyles = (colors: any) =>
       backgroundColor: colors.divider,
       height: 1,
     },
-    actionButtons: {
-      flexDirection: "row",
-      gap: 12,
-      marginBottom: 16,
-    },
     actionButton: {
-      flex: 1,
-    },
-    buttonContainer: {
-      padding: 20,
-      paddingBottom: 30,
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      backgroundColor: colors.surface,
-    },
-    backButton: {
-      borderRadius: 8,
-      backgroundColor: colors.button.primary,
+      marginTop: 8,
     },
   });
