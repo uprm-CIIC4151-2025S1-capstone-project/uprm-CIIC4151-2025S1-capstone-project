@@ -73,21 +73,6 @@ export default function DeleteAccountModal() {
                 </Text>
               </View>
 
-              {/* <View style={styles.suggestions}>
-                <Text variant="titleSmall" style={styles.suggestionTitle}>
-                  Consider these alternatives:
-                </Text>
-                <Text style={styles.suggestionItem}>
-                  • Update your profile information instead
-                </Text>
-                <Text style={styles.suggestionItem}>
-                  • Contact support for assistance
-                </Text>
-                <Text style={styles.suggestionItem}>
-                  • Temporarily deactivate your account
-                </Text>
-              </View> */}
-
               <View style={styles.buttons}>
                 <Button
                   mode="outlined"
@@ -193,8 +178,6 @@ const createStyles = (colors: any) =>
     },
     card: {
       padding: 16,
-      elevation: 4,
-      boxShadow: `0px 2px 4px ${colors.border || "#0000001a"}`,
       backgroundColor: colors.card,
     },
     title: {
@@ -224,22 +207,6 @@ const createStyles = (colors: any) =>
     consequenceItem: {
       color: colors.onErrorContainer,
       marginBottom: 8,
-      lineHeight: 18,
-    },
-    suggestions: {
-      backgroundColor: colors.infoContainer,
-      padding: 16,
-      borderRadius: 8,
-      marginBottom: 24,
-    },
-    suggestionTitle: {
-      color: colors.onInfoContainer,
-      marginBottom: 8,
-      fontWeight: "600",
-    },
-    suggestionItem: {
-      color: colors.onInfoContainer,
-      marginBottom: 4,
       lineHeight: 18,
     },
     instructionText: {
