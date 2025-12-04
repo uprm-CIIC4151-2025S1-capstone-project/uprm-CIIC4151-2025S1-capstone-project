@@ -145,7 +145,6 @@ const createStyles = (colors: any) =>
       marginVertical: 16,
       backgroundColor: colors.divider,
     },
-
     scrollContent: {
       flexGrow: 1,
       padding: 20,
@@ -158,12 +157,6 @@ const createStyles = (colors: any) =>
     },
     content: {
       gap: 20,
-    },
-    subtitle: {
-      textAlign: "center",
-      marginBottom: 8,
-      color: colors.textSecondary,
-      fontWeight: "600",
     },
     text: {
       lineHeight: 22,
@@ -197,16 +190,5 @@ const createStyles = (colors: any) =>
       marginTop: 24,
       color: colors.textMuted,
       fontStyle: "italic",
-    },
-    buttonContainer: {
-      padding: 20,
-      paddingBottom: 30,
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      backgroundColor: colors.surface,
-    },
-    button: {
-      borderRadius: 8,
-      backgroundColor: colors.button.primary,
     },
   });
