@@ -5,7 +5,6 @@ import { Button, Text, Divider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PrivacyPolicyModal() {
-  // const router = useRouter();
   const { colors } = useAppColors();
 
   const handleContactPrivacy = () => {
@@ -29,7 +28,7 @@ export default function PrivacyPolicyModal() {
           </Text>
 
           <Text variant="bodySmall" style={styles.effectiveDate}>
-            Last Updated: December 2024
+            Last Updated: December
           </Text>
 
           <Text variant="bodyMedium" style={styles.introText}>
@@ -37,7 +36,7 @@ export default function PrivacyPolicyModal() {
             explains how we collect, use, and protect your personal information.
           </Text>
 
-          {/* Privacy policy sections remain the same */}
+          {/* Privacy policy sections*/}
           <View style={styles.section}>
             <Text variant="titleMedium" style={styles.sectionTitle}>
               1. Information We Collect
@@ -53,8 +52,6 @@ export default function PrivacyPolicyModal() {
               submit reports or use location-based features
             </Text>
           </View>
-
-          {/* ... rest of privacy policy sections ... */}
 
           <Divider style={styles.divider} />
 
@@ -93,18 +90,6 @@ export default function PrivacyPolicyModal() {
             </Button>
           </View>
         </ScrollView>
-
-        {/* <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            onPress={() => router.back()}
-            style={styles.backButton}
-            icon="arrow-left"
-            textColor={colors.button.text}
-          >
-            Back to Settings
-          </Button>
-        </View> */}
       </ThemedView>
     </SafeAreaView>
   );
@@ -191,16 +176,5 @@ const createStyles = (colors: any) =>
     actionButton: {
       flex: 1,
       borderColor: colors.primary,
-    },
-    buttonContainer: {
-      padding: 20,
-      paddingBottom: 30,
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      backgroundColor: colors.surface,
-    },
-    backButton: {
-      borderRadius: 8,
-      backgroundColor: colors.button.primary,
     },
   });
