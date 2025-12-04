@@ -1,22 +1,17 @@
 import { ThemedView } from "@/components/themed-view";
 import { useRouter } from "expo-router";
-import { StyleSheet, View, ScrollView, Alert, Switch } from "react-native";
-import { Button, Text, List, Divider } from "react-native-paper";
+import { StyleSheet, ScrollView, Alert, Switch, View } from "react-native";
+import { Text, List, Divider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
-import { getStoredCredentials } from "@/utils/auth";
 import { useAppColors } from "@/hooks/useAppColors";
 
 export default function AccountSecurityModal() {
   const router = useRouter();
   const { colors } = useAppColors();
-  const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
-    biometricAuth: false,
-    twoFactorAuth: false,
-    sessionTimeout: true,
-    emailNotifications: true,
-    pushNotifications: true,
+    sessionTimeout: false,
+    emailNotifications: false,
   });
 
   const handleSettingToggle = (setting: keyof typeof settings) => {
@@ -24,55 +19,6 @@ export default function AccountSecurityModal() {
       ...prev,
       [setting]: !prev[setting],
     }));
-  };
-
-  const handleSaveSettings = async () => {
-    setLoading(true);
-    try {
-      const credentials = await getStoredCredentials();
-      if (!credentials) {
-        Alert.alert("Error", "Please log in to update security settings");
-        router.back();
-        return;
-      }
-
-      // TODO: Implement API call to save security settings
-      // await updateSecuritySettings(credentials.userId, settings);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      Alert.alert("Success", "Security settings updated successfully!", [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]);
-    } catch (error: any) {
-      console.error("Security settings update error:", error);
-      Alert.alert(
-        "Error",
-        error.message || "Failed to update security settings. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleViewSessions = () => {
-    Alert.alert(
-      "Active Sessions",
-      "This feature will show you all active sessions and allow you to log out from other devices.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "View Sessions",
-          onPress: () => {
-            Alert.alert("Info", "Sessions management coming soon!");
-          },
-        },
-      ]
-    );
   };
 
   const handleExportData = () => {
@@ -108,11 +54,6 @@ export default function AccountSecurityModal() {
             Account Security
           </Text>
 
-          {/* <Text variant="bodyMedium" style={styles.introText}>
-            Manage your account security preferences and privacy settings to
-            keep your information safe and secure.
-          </Text> */}
-
           {/* Authentication Settings */}
           <View style={[styles.section, { borderLeftColor: colors.primary }]}>
             <Text
@@ -126,46 +67,6 @@ export default function AccountSecurityModal() {
               enhanced security.
             </Text>
 
-            {/* <List.Item
-              title="Biometric Authentication"
-              description="Use fingerprint or face ID to log in quickly and securely"
-              left={(props) => <List.Icon {...props} icon="fingerprint" />}
-              right={(props) => (
-                <Switch
-                  value={settings.biometricAuth}
-                  onValueChange={() => handleSettingToggle("biometricAuth")}
-                  disabled={loading}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={
-                    settings.biometricAuth ? colors.primary : colors.border
-                  }
-                />
-              )}
-              style={styles.listItem}
-              titleStyle={styles.listItemTitle}
-              descriptionStyle={styles.listItemDescription}
-            /> */}
-
-            {/* <List.Item
-              title="Two-Factor Authentication"
-              description="Add an extra layer of security to your account"
-              left={(props) => <List.Icon {...props} icon="shield-account" />}
-              right={(props) => (
-                <Switch
-                  value={settings.twoFactorAuth}
-                  onValueChange={() => handleSettingToggle("twoFactorAuth")}
-                  disabled={loading}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={
-                    settings.twoFactorAuth ? colors.primary : colors.border
-                  }
-                />
-              )}
-              style={styles.listItem}
-              titleStyle={styles.listItemTitle}
-              descriptionStyle={styles.listItemDescription}
-            /> */}
-
             <List.Item
               title="Auto Logout"
               description="Automatically log out after 30 minutes of inactivity"
@@ -174,7 +75,6 @@ export default function AccountSecurityModal() {
                 <Switch
                   value={settings.sessionTimeout}
                   onValueChange={() => handleSettingToggle("sessionTimeout")}
-                  disabled={loading}
                   trackColor={{ false: colors.border, true: colors.primary }}
                   thumbColor={
                     settings.sessionTimeout ? colors.primary : colors.border
@@ -210,7 +110,6 @@ export default function AccountSecurityModal() {
                   onValueChange={() =>
                     handleSettingToggle("emailNotifications")
                   }
-                  disabled={loading}
                   trackColor={{ false: colors.border, true: colors.primary }}
                   thumbColor={
                     settings.emailNotifications ? colors.primary : colors.border
@@ -221,26 +120,6 @@ export default function AccountSecurityModal() {
               titleStyle={styles.listItemTitle}
               descriptionStyle={styles.listItemDescription}
             />
-
-            {/* <List.Item
-              title="Push Notifications"
-              description="Receive instant security alerts on your device"
-              left={(props) => <List.Icon {...props} icon="bell" />}
-              right={(props) => (
-                <Switch
-                  value={settings.pushNotifications}
-                  onValueChange={() => handleSettingToggle("pushNotifications")}
-                  disabled={loading}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={
-                    settings.pushNotifications ? colors.primary : colors.border
-                  }
-                />
-              )}
-              style={styles.listItem}
-              titleStyle={styles.listItemTitle}
-              descriptionStyle={styles.listItemDescription}
-            /> */}
           </View>
 
           <Divider style={styles.divider} />
@@ -257,17 +136,6 @@ export default function AccountSecurityModal() {
               Manage your account security and access additional security
               features.
             </Text>
-
-            {/* <List.Item
-              title="Active Sessions"
-              description="View and manage your active login sessions across devices"
-              left={(props) => <List.Icon {...props} icon="monitor" />}
-              onPress={handleViewSessions}
-              style={styles.listItem}
-              titleStyle={styles.listItemTitle}
-              descriptionStyle={styles.listItemDescription}
-              right={(props) => <List.Icon {...props} icon="chevron-right" />}
-            /> */}
 
             <List.Item
               title="Export Data"
@@ -291,105 +159,7 @@ export default function AccountSecurityModal() {
               right={(props) => <List.Icon {...props} icon="chevron-right" />}
             />
           </View>
-
-          {/* Security Status */}
-          {/* <View style={[styles.section, { borderLeftColor: colors.success }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.success }]}
-            >
-              Security Status
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              Overview of your current account security status and
-              recommendations.
-            </Text> */}
-
-            {/* <View style={styles.statusItems}>
-              <View style={styles.statusItem}>
-                <Text style={styles.statusLabel}>Password Strength:</Text>
-                <Text style={[styles.statusValue, { color: colors.success }]}>
-                  Strong
-                </Text>
-              </View> */}
-              {/* <View style={styles.statusItem}>
-                <Text style={styles.statusLabel}>2FA Status:</Text>
-                <Text
-                  style={[
-                    styles.statusValue,
-                    {
-                      color: settings.twoFactorAuth
-                        ? colors.success
-                        : colors.warning,
-                    },
-                  ]}
-                >
-                  {settings.twoFactorAuth ? "Enabled" : "Disabled"}
-                </Text>
-              </View> */}
-              {/* <View style={styles.statusItem}>
-                <Text style={styles.statusLabel}>Last Login:</Text>
-                <Text style={styles.statusValue}>
-                  {new Date().toLocaleDateString()}
-                </Text>
-              </View>
-            </View> */}
-          {/* </View> */}
-
-          {/* Security Tips */}
-          {/* <View style={[styles.section, { borderLeftColor: colors.secondary }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.secondary }]}
-            >
-              Security Recommendations
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              • Enable two-factor authentication for enhanced account protection
-              {"\n"}• Use a unique, strong password that you don&apos;t use
-              elsewhere
-              {"\n"}• Regularly review your active sessions and log out unused
-              devices{"\n"}• Keep the app updated to the latest version for
-              security patches{"\n"}• Be cautious of suspicious emails,
-              messages, or login attempts
-            </Text>
-          </View> */}
-
-          {/* Action Buttons */}
-          <View style={styles.actionButtons}>
-            <Button
-              mode="outlined"
-              onPress={() => router.back()}
-              disabled={loading}
-              style={styles.actionButton}
-              textColor={colors.text}
-            >
-              Cancel
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleSaveSettings}
-              loading={loading}
-              disabled={loading}
-              style={styles.actionButton}
-              textColor={colors.button.text}
-            >
-              Save Settings
-            </Button>
-          </View>
         </ScrollView>
-
-        {/* <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            onPress={() => router.back()}
-            style={styles.backButton}
-            icon="arrow-left"
-            textColor={colors.button.text}
-          >
-            Back to Settings
-          </Button>
-        </View> */}
       </ThemedView>
     </SafeAreaView>
   );
@@ -416,18 +186,11 @@ const createStyles = (colors: any) =>
       fontWeight: "bold",
       color: colors.text,
     },
-    introText: {
-      textAlign: "center",
-      lineHeight: 22,
-      color: colors.textSecondary,
-      marginBottom: 8,
-    },
     section: {
       backgroundColor: colors.surface,
       padding: 16,
       borderRadius: 8,
       borderLeftWidth: 4,
-      boxShadow: `0px 1px 2px ${colors.shadow || "#0000001a"}`,
     },
     sectionTitle: {
       marginBottom: 12,
@@ -451,45 +214,9 @@ const createStyles = (colors: any) =>
       fontSize: 12,
       lineHeight: 16,
     },
-    statusItems: {
-      gap: 12,
-      marginTop: 8,
-    },
-    statusItem: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingVertical: 4,
-    },
-    statusLabel: {
-      color: colors.textSecondary,
-      fontWeight: "500",
-    },
-    statusValue: {
-      fontWeight: "600",
-    },
     divider: {
       marginVertical: 8,
       backgroundColor: colors.divider,
       height: 1,
-    },
-    actionButtons: {
-      flexDirection: "row",
-      gap: 12,
-      marginBottom: 16,
-    },
-    actionButton: {
-      flex: 1,
-    },
-    buttonContainer: {
-      padding: 20,
-      paddingBottom: 30,
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      backgroundColor: colors.surface,
-    },
-    backButton: {
-      borderRadius: 8,
-      backgroundColor: colors.button.primary,
     },
   });
