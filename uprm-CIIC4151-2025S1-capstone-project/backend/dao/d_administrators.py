@@ -195,42 +195,30 @@ class AdministratorsDAO:
         """
         query = """
             SELECT
-                a.id,
-                a.department,
                 COUNT(r.id) AS total_assigned_reports,
                 COUNT(CASE WHEN r.status = 'in_progress' THEN 1 END) AS in_progress_reports,
-                COUNT(CASE WHEN r.status = 'resolved' THEN 1 END) AS resolved_reports,
-                COUNT(CASE WHEN r.status = 'open' THEN 1 END) AS open_reports,
-                COUNT(CASE WHEN r.status = 'denied' THEN 1 END) AS denied_reports,
-                COALESCE(AVG(r.rating), 0) AS avg_rating,
-                COUNT(CASE WHEN r.validated_by = a.id THEN 1 END) AS validated_reports,
-                COUNT(CASE WHEN r.resolved_by = a.id THEN 1 END) AS resolved_personally,
-                COUNT(DISTINCT r.category) AS categories_handled
+                COUNT(CASE WHEN r.resolved_by = a.id THEN 1 END) AS resolved_personally
             FROM administrators a
             LEFT JOIN reports r
                 ON (r.validated_by = a.id OR r.resolved_by = a.id)
             WHERE a.id = %s
-            GROUP BY a.id, a.department
+            GROUP BY a.id
         """
         with self.conn.cursor() as cur:
             cur.execute(query, (admin_id,))
             result = cur.fetchone()
 
             if not result:
-                return None
+                return {
+                    "total_assigned_reports": 0,
+                    "in_progress_reports": 0,
+                    "resolved_personally": 0
+                }
 
             return {
-                "admin_id": result[0],
-                "department": result[1],
-                "total_assigned_reports": result[2],
-                "in_progress_reports": result[3],
-                "resolved_reports": result[4],
-                "open_reports": result[5],
-                "denied_reports": result[6],
-                "avg_rating": float(result[7]) if result[7] else 0,
-                "validated_reports": result[8],
-                "resolved_personally": result[9],
-                "categories_handled": result[10],
+                "total_assigned_reports": result[0] or 0,
+                "in_progress_reports": result[1] or 0,
+                "resolved_personally": result[2] or 0,
             }
 
     def get_all_admin_stats(self):

@@ -336,16 +336,33 @@ class ReportsDAO:
     # -------------------------------
     def get_overview_stats(self):
         query = """
+            WITH report_stats AS (
+                SELECT
+                    COUNT(*) as total_reports,
+                    COUNT(CASE WHEN status = 'open' THEN 1 END) as open_reports,
+                    COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as in_progress_reports,
+                    COUNT(CASE WHEN status = 'resolved' THEN 1 END) as resolved_reports,
+                    COUNT(CASE WHEN status = 'denied' THEN 1 END) as denied_reports,
+                    COALESCE(AVG(rating), 0) as avg_rating
+                FROM reports
+            ),
+            user_stats AS (
+                SELECT COUNT(*) as total_users FROM users
+            ),
+            pinned_stats AS (
+                SELECT COUNT(*) as pinned_reports_count FROM pinned_reports
+            )
             SELECT
-                COUNT(*) as total_reports,
-                COUNT(CASE WHEN status = 'open' THEN 1 END) as open_reports,
-                COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as in_progress_reports,
-                COUNT(CASE WHEN status = 'resolved' THEN 1 END) as resolved_reports,
-                COUNT(CASE WHEN status = 'denied' THEN 1 END) as denied_reports,
-                COUNT(DISTINCT created_by) as unique_reporters,
-                COALESCE(AVG(rating), 0) as avg_rating,
-                COUNT(CASE WHEN rating IS NOT NULL THEN 1 END) as rated_reports
-            FROM reports
+                rs.total_reports,
+                rs.open_reports,
+                rs.in_progress_reports,
+                rs.resolved_reports,
+                rs.denied_reports,
+                rs.resolved_reports + rs.denied_reports as closed_reports,
+                rs.avg_rating,
+                us.total_users,
+                ps.pinned_reports_count
+            FROM report_stats rs, user_stats us, pinned_stats ps
         """
         with self.conn.cursor() as cur:
             cur.execute(query)
@@ -356,9 +373,10 @@ class ReportsDAO:
                 "in_progress_reports": result[2],
                 "resolved_reports": result[3],
                 "denied_reports": result[4],
-                "unique_reporters": result[5],
+                "closed_reports": result[5],
                 "avg_rating": float(result[6]) if result[6] else 0,
-                "rated_reports": result[7],
+                "total_users": result[7],
+                "pinned_reports_count": result[8],
             }
 
     def get_department_stats(self, department: str):

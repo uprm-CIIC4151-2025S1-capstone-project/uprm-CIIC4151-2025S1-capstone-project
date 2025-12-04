@@ -188,25 +188,24 @@ class UsersDAO:
                 u.id,
                 u.email,
                 u.created_at,
-
                 COALESCE(r.total_reports, 0)            AS total_reports,
-                COALESCE(r.current_reports, 0)          AS current_reports,
                 COALESCE(r.open_reports, 0)             AS open_reports,
-                COALESCE(r.resolved_reports, 0)         AS resolved_reports,
                 COALESCE(r.in_progress_reports, 0)      AS in_progress_reports,
+                COALESCE(r.resolved_reports, 0)         AS resolved_reports,
+                COALESCE(r.denied_reports, 0)           AS denied_reports,
+                COALESCE(r.resolved_reports, 0) + COALESCE(r.denied_reports, 0) AS closed_reports,
                 COALESCE(pr.pinned_reports_count, 0)    AS pinned_reports_count,
-                COALESCE(r.avg_rating_given, 0)         AS avg_rating_given,
+                COALESCE(r.avg_rating_given, 0)         AS avg_rating,
                 r.last_report_date                      AS last_report_date
             FROM users u
             LEFT JOIN (
                 SELECT
                     created_by,
                     COUNT(*)                                           AS total_reports,
-                    COUNT(*) FILTER (WHERE status IN ('open', 'in_progress'))
-                                                                       AS current_reports,
                     COUNT(*) FILTER (WHERE status = 'open')            AS open_reports,
-                    COUNT(*) FILTER (WHERE status = 'resolved')        AS resolved_reports,
                     COUNT(*) FILTER (WHERE status = 'in_progress')     AS in_progress_reports,
+                    COUNT(*) FILTER (WHERE status = 'resolved')        AS resolved_reports,
+                    COUNT(*) FILTER (WHERE status = 'denied')          AS denied_reports,
                     AVG(rating)                                        AS avg_rating_given,
                     MAX(created_at)                                    AS last_report_date
                 FROM reports
@@ -233,15 +232,16 @@ class UsersDAO:
                 "email": result[1],
                 "created_at": result[2],
                 "total_reports": result[3],
-                "current_reports": result[4],
-                "open_reports": result[5],
+                "open_reports": result[4],
+                "in_progress_reports": result[5],
                 "resolved_reports": result[6],
-                "in_progress_reports": result[7],
-                "pinned_reports_count": result[8],
-                "avg_rating_given": float(result[9]) if result[9] else 0,
-                "last_report_date": result[10],
+                "denied_reports": result[7],
+                "closed_reports": result[8],  # ¡NUEVO!
+                "pinned_reports_count": result[9],
+                "avg_rating": float(result[10]) if result[10] else 0,
+                "last_report_date": result[11],
             }
-        
+
     def validate_credentials(self, email, password):
         """Validate user credentials without returning password"""
         query = """

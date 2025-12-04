@@ -345,12 +345,7 @@ class AdministratorsHandler:
 
             stats = dao.get_admin_stats(admin_id)
 
-            if not stats:
-                return (
-                    jsonify({"error_msg": "Failed to get admin stats"}),
-                    HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                )
-
+            # El DAO ahora devuelve el formato correcto, así que solo lo pasamos
             return jsonify(stats), HTTP_STATUS.OK
         except Exception as e:
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR

@@ -1,6 +1,6 @@
 from flask import jsonify
 from dao.d_reports import ReportsDAO
-from dao.d_administrators import AdministratorsDAO  # 👈 NEW
+from dao.d_administrators import AdministratorsDAO
 from constants import HTTP_STATUS
 
 
