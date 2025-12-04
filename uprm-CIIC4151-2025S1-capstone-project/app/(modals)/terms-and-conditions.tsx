@@ -1,23 +1,11 @@
 import { ThemedView } from "@/components/themed-view";
 import { useAppColors } from "@/hooks/useAppColors";
-import { StyleSheet, View, ScrollView, Linking } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TermsAndConditionsModal() {
-  // const router = useRouter();
   const { colors } = useAppColors();
-
-  const handleViewFullTerms = () => {
-    Linking.openURL("https://www.communityreports.com/terms");
-  };
-
-  const handleContactLegal = () => {
-    Linking.openURL(
-      "mailto:legal@communityreports.com?subject=Terms and Conditions Inquiry"
-    );
-  };
-
   const styles = createStyles(colors);
 
   return (
@@ -32,7 +20,7 @@ export default function TermsAndConditionsModal() {
           </Text>
 
           <Text variant="bodySmall" style={styles.effectiveDate}>
-            Last Updated: October 2025
+            Last Updated: December
           </Text>
 
           <Text variant="bodyMedium" style={styles.introText}>
@@ -105,22 +93,6 @@ export default function TermsAndConditionsModal() {
             </Text>
           </View>
 
-          {/* Intellectual Property */}
-          {/* <View style={[styles.section, { borderLeftColor: colors.primary }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.primary }]}
-            >
-              5. Intellectual Property
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              The Service and its original content, features, and functionality
-              are and will remain the exclusive property of Community Reports
-              and its licensors. The Service is protected by copyright,
-              trademark, and other laws.
-            </Text>
-          </View> */}
-
           {/* Termination */}
           <View style={[styles.section, { borderLeftColor: colors.primary }]}>
             <Text
@@ -154,21 +126,6 @@ export default function TermsAndConditionsModal() {
             </Text>
           </View>
 
-          {/* Governing Law */}
-          {/* <View style={[styles.section, { borderLeftColor: colors.primary }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.primary }]}
-            >
-              7. Governing Law
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              These Terms shall be governed and construed in accordance with the
-              laws of Puerto Rico, without regard to its conflict of law
-              provisions.
-            </Text>
-          </View> */}
-
           {/* Changes to Terms */}
           <View style={[styles.section, { borderLeftColor: colors.primary }]}>
             <Text
@@ -185,25 +142,6 @@ export default function TermsAndConditionsModal() {
             </Text>
           </View>
 
-          {/* Contact Information */}
-          {/* <View style={[styles.section, { borderLeftColor: colors.primary }]}>
-            <Text
-              variant="titleSmall"
-              style={[styles.sectionTitle, { color: colors.primary }]}
-            >
-              10. Contact Information
-            </Text>
-            <Text variant="bodyMedium" style={styles.sectionText}>
-              If you have any questions about these Terms, please contact us at:
-              {"\n\n"}
-              <Text style={styles.bold}>Email:</Text> legal@communityreports.com
-              {"\n"}
-              <Text style={styles.bold}>Website:</Text> www.communityreports.com
-              {"\n"}
-              <Text style={styles.bold}>Address:</Text> San Juan, Puerto Rico
-            </Text>
-          </View> */}
-
           {/* Acknowledgment Box */}
           <View style={styles.acknowledgmentBox}>
             <Text variant="bodyMedium" style={styles.acknowledgmentText}>
@@ -217,40 +155,7 @@ export default function TermsAndConditionsModal() {
             This is a summary of our full Terms and Conditions. For complete
             details, please review the full document.
           </Text>
-{/*
-          <View style={styles.actionButtons}>
-            <Button
-              mode="outlined"
-              onPress={handleViewFullTerms}
-              style={styles.actionButton}
-              icon="file-document"
-              textColor={colors.primary}
-            >
-              View Full Terms
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={handleContactLegal}
-              style={styles.actionButton}
-              icon="email"
-              textColor={colors.primary}
-            >
-              Contact Legal Team
-            </Button>
-          </View> */}
         </ScrollView>
-
-        {/* <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            onPress={() => router.back()}
-            style={styles.backButton}
-            icon="arrow-left"
-            textColor={colors.button.text}
-          >
-            Back to Settings
-          </Button> */
-        /* </View> */}
       </ThemedView>
     </SafeAreaView>
   );
@@ -295,12 +200,10 @@ const createStyles = (colors: any) =>
       borderRadius: 8,
       borderLeftWidth: 4,
       borderLeftColor: colors.primary,
-      boxShadow: `0px 1px 2px ${colors.shadow || "#0000001a"}`,
     },
     sectionTitle: {
       marginBottom: 12,
       fontWeight: "600",
-      color: colors.primary,
     },
     sectionText: {
       lineHeight: 20,
@@ -327,25 +230,5 @@ const createStyles = (colors: any) =>
       color: colors.textMuted,
       fontStyle: "italic",
       marginBottom: 16,
-    },
-    actionButtons: {
-      flexDirection: "row",
-      gap: 12,
-      marginBottom: 16,
-    },
-    actionButton: {
-      flex: 1,
-      borderColor: colors.primary,
-    },
-    buttonContainer: {
-      padding: 20,
-      paddingBottom: 30,
-      borderTopWidth: 1,
-      borderTopColor: colors.divider,
-      backgroundColor: colors.surface,
-    },
-    backButton: {
-      borderRadius: 8,
-      backgroundColor: colors.button?.primary,
     },
   });
