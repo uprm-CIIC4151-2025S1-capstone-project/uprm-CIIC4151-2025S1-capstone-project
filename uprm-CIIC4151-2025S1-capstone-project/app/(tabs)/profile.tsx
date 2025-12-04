@@ -1,20 +1,11 @@
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-// Componentes
 import AdminStats from "@/components/AdminStats";
 import NoActivityState from "@/components/NoActivityState";
 import ProfileErrorState from "@/components/ProfileErrorState";
 import RecentActivitySection from "@/components/RecentActivitySection";
-import ReportStats from "@/components/ReportStats";
-import StatsOverviewCard from "@/components/StatsOverviewCard";
+import UserStatsCard from "@/components/UserStatsCard"; // ← Corregido
+import SystemStatsCard from "@/components/SystemStatsCard"; // ← Corregido
 import StatsSwitchCard from "@/components/StatsSwitchCard";
 import UserCard from "@/components/UserCard";
-
-// Utils
 import { useAppColors } from "@/hooks/useAppColors";
 import { type ReportData, type UserSession } from "@/types/interfaces";
 import {
@@ -24,6 +15,11 @@ import {
   getUserStats,
 } from "@/utils/api";
 import { getStoredCredentials } from "@/utils/auth";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Button, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -37,7 +33,7 @@ export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [showSystemStats, setShowSystemStats] = useState(false);
-  const [expandedRecentActivity, setExpandedRecentActivity] = useState(false); // Nuevo estado
+  const [expandedRecentActivity, setExpandedRecentActivity] = useState(false);
 
   const loadProfileData = async () => {
     try {
@@ -56,16 +52,28 @@ export default function ProfileScreen() {
       const userData: UserSession = {
         id: credentials.userId,
         email: credentials.email,
-        admin: false,
-        suspended: false,
+        admin: credentials.admin || false,
+        suspended: credentials.suspended || false,
         created_at: new Date().toISOString(),
       };
       setUser(userData);
 
+      // Cargar datos en paralelo con valores por defecto
       const [statsData, reportsData, systemStatsData] = await Promise.all([
         getUserStats(userData.id).catch((err) => {
           console.warn("Failed to load user stats:", err);
-          return null;
+          // Valores por defecto para el scoring
+          return {
+            total_reports: 0,
+            open_reports: 0,
+            in_progress_reports: 0,
+            resolved_reports: 0,
+            denied_reports: 0,
+            closed_reports: 0,
+            pinned_reports_count: 0,
+            avg_rating: 0,
+            last_report_date: null,
+          };
         }),
         getReports(1, 100).catch((err) => {
           console.warn("Failed to load reports:", err);
@@ -73,7 +81,18 @@ export default function ProfileScreen() {
         }),
         getOverviewStats().catch((err) => {
           console.warn("Failed to load system stats:", err);
-          return null;
+          // Valores por defecto para el scoring del sistema
+          return {
+            total_reports: 0,
+            open_reports: 0,
+            in_progress_reports: 0,
+            resolved_reports: 0,
+            denied_reports: 0,
+            closed_reports: 0,
+            avg_rating: 0,
+            total_users: 0,
+            pinned_reports_count: 0,
+          };
         }),
       ]);
 
@@ -87,6 +106,12 @@ export default function ProfileScreen() {
           setAdminStats(adminStatsData);
         } catch (err) {
           console.warn("Failed to load admin stats:", err);
+          // Valores por defecto para admin
+          setAdminStats({
+            total_assigned_reports: 0,
+            in_progress_reports: 0,
+            resolved_personally: 0,
+          });
         }
       }
     } catch (err: any) {
@@ -205,14 +230,17 @@ export default function ProfileScreen() {
             />
 
             {showSystemStats ? (
-              <StatsOverviewCard stats={systemStats} />
+              <SystemStatsCard stats={systemStats} /> // ← Corregido
             ) : (
-              <ReportStats
-                filed={userStats?.total_reports}
-                resolved={userStats?.resolved_reports}
-                pending={userStats?.open_reports}
-                pinned={userStats?.pinned_reports_count}
-                lastReportDate={userStats?.last_report_date}
+              <UserStatsCard // ← Corregido
+                filed={userStats?.total_reports || 0}
+                resolved={userStats?.resolved_reports || 0}
+                pending={userStats?.open_reports || 0}
+                pinned={userStats?.pinned_reports_count || 0}
+                lastReportDate={userStats?.last_report_date || null}
+                inProgress={userStats?.in_progress_reports || 0}
+                denied={userStats?.denied_reports || 0}
+                closed={userStats?.closed_reports || 0}
               />
             )}
 

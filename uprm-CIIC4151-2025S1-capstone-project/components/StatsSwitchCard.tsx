@@ -16,13 +16,9 @@ export default function StatsSwitchCard({
   return (
     <View style={styles.switchContainer}>
       <Text style={styles.switchLabel}>
-        {showSystemStats ? "System Overview" : "My Reports"}
+        {showSystemStats ? "Switch to User Stats" : "Switch to System Stats"}
       </Text>
-      <Switch
-        value={showSystemStats}
-        onValueChange={onToggle}
-        color={colors.primary}
-      />
+      <Switch value={showSystemStats} onValueChange={onToggle} />
     </View>
   );
 }
