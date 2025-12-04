@@ -1,11 +1,10 @@
 import { ThemedView } from "@/components/themed-view";
 import { useAppColors } from "@/hooks/useAppColors";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { List, Text, Icon, Divider } from "react-native-paper";
+import { List, Text, Divider } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AboutUsModal() {
-  // const router = useRouter();
   const { colors } = useAppColors();
 
   const styles = createStyles(colors);
@@ -19,14 +18,11 @@ export default function AboutUsModal() {
           </Text>
 
           <View style={styles.content}>
-            {/* <Text variant="headlineSmall" style={styles.subtitle}>
-              Welcome to Our Reporting Platform
-            </Text> */}
-
             <Text variant="bodyMedium" style={styles.text}>
-              We’re dedicated to building safer and more responsive communities.
-              We help everyone connect with local authorities and bring
-              transparency to the reporting process of common public needs.
+              We&apos;re dedicated to building safer and more responsive
+              communities. We help everyone connect with local authorities and
+              bring transparency to the reporting process of common public
+              needs.
             </Text>
 
             <View style={styles.section}>
@@ -66,11 +62,12 @@ export default function AboutUsModal() {
               />
               <Text variant="bodyMedium" style={styles.text}>
                 • <Text style={styles.bold}>Transparency: </Text>
-                Open and clear updates on every report.{"\n"}{"\n"}•{" "}
-                <Text style={styles.bold}>Accountability:</Text> Ensuring
-                actions are taken and progress is visible.{"\n"}{"\n"}•{" "}
-                <Text style={styles.bold}>Efficiency:</Text> Making it quick and
-                easy to report and resolve issues.{"\n"}{"\n"}
+                Open and clear updates on every report.{"\n"}
+                {"\n"}• <Text style={styles.bold}>Accountability:</Text>{" "}
+                Ensuring actions are taken and progress is visible.{"\n"}
+                {"\n"}• <Text style={styles.bold}>Efficiency:</Text> Making it
+                quick and easy to report and resolve issues.{"\n"}
+                {"\n"}
               </Text>
             </View>
 
@@ -81,17 +78,27 @@ export default function AboutUsModal() {
                 style={{ paddingHorizontal: 0 }}
               />
               <Text variant="bodyMedium" style={styles.text}>
-                • <Text style={styles.bold}>Ramphis Lopez – Data & Backend Development: </Text> {"\n"}
+                •{" "}
+                <Text style={styles.bold}>
+                  Ramphis Lopez - Data & Backend Development:{" "}
+                </Text>{" "}
+                {"\n"}
                 Responsible for data collection during research, defining the
                 database schema, and implementing core backend functions. Leads
                 the development of analytics features and performance testing in
-                later stages. {"\n"} {"\n"}
-                • <Text style={styles.bold}>Manuel Fuertes – Requirements & Integration: </Text> {"\n"}
+                later stages. {"\n"} {"\n"}•{" "}
+                <Text style={styles.bold}>
+                  Manuel Fuertes - Requirements & Integration:{" "}
+                </Text>{" "}
+                {"\n"}
                 Focuses on drafting project requirements and setting up the
                 backend environment. Works on UI mockups during development and
                 integrates frontend with backend. Leads the analysis of user
-                feedback. {"\n"} {"\n"}
-                • <Text style={styles.bold}>Jonathan Rodriguez – Research & API Development: </Text> {"\n"}
+                feedback. {"\n"} {"\n"}•{" "}
+                <Text style={styles.bold}>
+                  Jonathan Rodriguez - Research & API Development:{" "}
+                </Text>{" "}
+                {"\n"}
                 Conducts initial interviews, researches and prepares development
                 tools, and implements REST API endpoints. Contributes to
                 settings functionality and gathers insights from surveys during
@@ -108,8 +115,10 @@ export default function AboutUsModal() {
                 style={{ paddingHorizontal: 0 }}
               />
               <Text variant="bodyMedium" style={styles.text}>
-                Have a question or suggestion? We’d love to hear from you!{"\n"}
-                Visit the Contact Support section in the app settings to reach our team.
+                Have a question or suggestion? We&apos;d love to hear from you!
+                {"\n"}
+                Visit the Contact Support section in the app settings to reach
+                our team.
               </Text>
             </View>
 
@@ -118,18 +127,6 @@ export default function AboutUsModal() {
             </Text>
           </View>
         </ScrollView>
-
-        {/* <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            onPress={() => router.back()}
-            style={styles.button}
-            icon="arrow-left"
-            textColor={colors.button.text}
-          >
-            Back to Settings
-          </Button>
-        </View> */}
       </ThemedView>
     </SafeAreaView>
   );
