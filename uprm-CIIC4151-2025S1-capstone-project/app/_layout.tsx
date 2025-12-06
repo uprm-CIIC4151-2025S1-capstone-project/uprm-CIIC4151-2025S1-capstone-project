@@ -169,7 +169,14 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="(modals)/report-form"
-              options={{ presentation: "modal", title: "Create Report" }}
+              options={({ route }) => {
+                const params = route.params as any;
+                const isEdit = params?.mode === "edit";
+                return {
+                  presentation: "modal",
+                  title: isEdit ? "Edit Report" : "Create Report",
+                };
+              }}
             />
             <Stack.Screen
               name="(modals)/report-view"

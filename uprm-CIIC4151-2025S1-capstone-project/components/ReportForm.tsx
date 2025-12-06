@@ -1,5 +1,5 @@
 import { ReportFormData, ReportCategory } from "@/types/interfaces";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // 🔹 add useEffect
 import { StyleSheet, View, ScrollView, Alert, Image } from "react-native";
 import { Button, Chip, TextInput, Text } from "react-native-paper";
 import { useAppColors } from "@/hooks/useAppColors";
@@ -14,6 +14,7 @@ interface ReportFormProps {
   onCancel?: () => void;
   onClear?: () => void;
   loading?: boolean;
+  initialData?: ReportFormData | null;
 }
 
 export default function ReportForm({
@@ -21,6 +22,7 @@ export default function ReportForm({
   onCancel,
   onClear,
   loading = false,
+  initialData,
 }: ReportFormProps) {
   const { colors } = useAppColors();
   const [title, setTitle] = useState("");
@@ -29,6 +31,22 @@ export default function ReportForm({
   const [locationId, setLocationId] = useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [occurredOn, setOccurredOn] = useState<Date>(new Date());
+
+  // 🔹 PREFILL when initialData is available (Edit mode)
+  useEffect(() => {
+    if (!initialData) return;
+
+    setTitle(initialData.title ?? "");
+    setDescription(initialData.description ?? "");
+    setCategory((initialData.category as ReportCategory) || ReportCategory.OTHER);
+    setLocationId(initialData.location_id ?? null);
+    setImageUrl(initialData.image_url ?? "");
+    setOccurredOn(
+      initialData.occurred_on
+        ? new Date(initialData.occurred_on)
+        : new Date()
+    );
+  }, [initialData]);
 
   const categories = [
     { label: "Pothole", value: ReportCategory.POTHOLE },
@@ -54,7 +72,7 @@ export default function ReportForm({
     setOccurredOn(new Date());
     onClear?.();
   };
-
+  
   const isFormValid = () => {
     return title.trim() !== "" && description.trim() !== "";
   };
@@ -78,7 +96,6 @@ export default function ReportForm({
       occurred_on: occurredOn.toISOString(),
     };
 
-    // Let the parent decide navigation; just pass data up
     onSubmit(reportData);
   };
 

@@ -92,7 +92,10 @@ export default function ReportViewModal() {
   // Action handlers
   const handleEdit = () => {
     if (!report) return;
-    // TODO: Navigate to edit screen
+    router.push({
+      pathname: "/(modals)/report-form",
+      params: { id: report.id.toString(), mode: "edit" },
+    });
   };
 
   const handlePin = async (pinned: boolean) => {

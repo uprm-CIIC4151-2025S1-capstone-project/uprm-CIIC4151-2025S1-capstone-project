@@ -23,7 +23,8 @@ export const ReportDetails = ({ report, ratingCount }: ReportDetailsProps) => {
   const [userDetails, setUserDetails] = useState<{
     [key: number]: UserDetails;
   }>({});
-  const [loadingUsers, setLoadingUsers] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loadingUsers, setLoadingUsers] = useState(false); 
 
   // Cargar detalles de usuarios
   useEffect(() => {
