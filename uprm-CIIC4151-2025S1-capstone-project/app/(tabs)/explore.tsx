@@ -11,8 +11,9 @@ import {
 } from "@/utils/api";
 import { getStoredCredentials } from "@/utils/auth";
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   ActivityIndicator,
   Button,
@@ -283,6 +284,13 @@ export default function ReportScreen() {
       loadExploreReports(1, true);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
 
   const handleReportPress = (reportId: number) => {
     router.push({

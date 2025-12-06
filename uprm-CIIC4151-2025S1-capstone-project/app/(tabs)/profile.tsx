@@ -16,7 +16,8 @@ import {
 } from "@/utils/api";
 import { getStoredCredentials } from "@/utils/auth";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -125,9 +126,12 @@ export default function ProfileScreen() {
     loadProfileData();
   };
 
-  useEffect(() => {
-    loadProfileData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadProfileData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
 
   const handleReportPress = (reportId: number) => {
     router.push({

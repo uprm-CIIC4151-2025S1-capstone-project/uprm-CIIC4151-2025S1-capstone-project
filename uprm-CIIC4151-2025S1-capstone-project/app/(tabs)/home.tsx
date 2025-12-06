@@ -7,7 +7,8 @@ import type { ReportData, UserSession } from "@/types/interfaces";
 import { getPinnedReports } from "@/utils/api";
 import { getStoredCredentials } from "@/utils/auth";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -67,9 +68,12 @@ export default function HomeScreen() {
     loadHomeData();
   };
 
-  useEffect(() => {
-    loadHomeData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadHomeData();
+    }, [])
+  );
+
 
   const handleReportPress = (reportId?: number) => {
     if (reportId == null) {
