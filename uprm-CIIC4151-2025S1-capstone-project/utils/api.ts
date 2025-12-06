@@ -737,6 +737,7 @@ export async function checkReportPinned(
 
 // TODO Pin/Unpin report
 export async function togglePinReport(reportId: number, pin: boolean) {
+  console.log("[togglePinReport]", { reportId, pin });
   const credentials = await getStoredCredentials();
   if (!credentials) throw new Error("User not authenticated");
 

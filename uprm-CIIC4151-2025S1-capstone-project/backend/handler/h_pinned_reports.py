@@ -163,7 +163,7 @@ class PinnedReportsHandler:
 
             return (
                 jsonify(
-                    {"user_id": user_id, "report_id": report_id, "is_pinned": is_pinned}
+                    {"user_id": user_id, "report_id": report_id, "pinned": is_pinned}
                 ),
                 HTTP_STATUS.OK,
             )

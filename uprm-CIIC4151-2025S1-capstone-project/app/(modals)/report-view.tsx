@@ -57,6 +57,7 @@ export default function ReportViewModal() {
             checkReportPinned(Number(id)),
             checkReportRated(Number(id)),
           ]);
+          console.log("[loadReport] checkReportPinned =>", pinnedStatus);
           setIsPinned(pinnedStatus.pinned);
           setIsRated(ratedStatus.rated);
           setRatingCount(ratedStatus.rating);
@@ -95,6 +96,7 @@ export default function ReportViewModal() {
   };
 
   const handlePin = async (pinned: boolean) => {
+    console.log("[handlePin] pinned param =", pinned, "current isPinned =", isPinned);
     if (!report || !currentUser) return;
 
     try {
