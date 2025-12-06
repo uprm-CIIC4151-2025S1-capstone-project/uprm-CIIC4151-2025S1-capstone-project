@@ -57,7 +57,8 @@ export const ReportDetails = ({ report, ratingCount }: ReportDetailsProps) => {
     };
 
     loadUserDetails();
-  }, [report.created_by, report.validated_by, report.resolved_by, userDetails]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report.created_by, report.validated_by, report.resolved_by]);
 
   const getUserDisplayName = (userId: number) => {
     const user = userDetails[userId];
