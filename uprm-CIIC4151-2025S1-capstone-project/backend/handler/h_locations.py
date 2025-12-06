@@ -33,9 +33,8 @@ class LocationsHandler:
     def map_to_dict_with_details(self, location):
         """Map location with address details to dictionary"""
         base_dict = self.map_to_dict(location)
-        if len(location) > 3:  # Includes address fields
-            base_dict["address"] = location[3]
-            base_dict["city"] = location[4]
+        if len(location) > 4:  # Includes address fields
+            base_dict["address"] = location[4]
             base_dict["country"] = location[5]
         return base_dict
 

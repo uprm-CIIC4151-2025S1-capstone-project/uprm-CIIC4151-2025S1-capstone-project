@@ -48,15 +48,6 @@ export interface UserSession {
   created_at: string;
 }
 
-export interface LocationData {
-  id: number;
-  city: string;
-  latitude: number;
-  longitude: number;
-  address?: string;
-  created_at?: string;
-}
-
 // Full report from backend - matches your reports table
 export interface ReportData {
   id: number;
@@ -230,6 +221,13 @@ export interface LocationSearchResult {
   longitude: number;
   address: string;
   distance?: number;
+}
+
+export interface LocationData {
+  id: number;
+  city: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface LocationWithReports extends LocationData {

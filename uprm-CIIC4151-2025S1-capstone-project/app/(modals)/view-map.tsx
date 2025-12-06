@@ -63,7 +63,7 @@ export default function ViewMapScreen() {
               <Text>{loc.city}</Text>
             </DataTable.Cell>
             <DataTable.Cell numeric style={styles.colCount}>
-              <Text>{loc.report_count}</Text>
+              <Text>{loc.report_count ?? 0}</Text>
             </DataTable.Cell>
           </DataTable.Row>
         ))}

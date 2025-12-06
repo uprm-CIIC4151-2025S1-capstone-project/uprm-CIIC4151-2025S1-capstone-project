@@ -349,6 +349,7 @@ export async function getLocation(id: number) {
 }
 
 export async function createLocation(data: {
+  //city: string;
   latitude: number;
   longitude: number;
 }) {
@@ -394,12 +395,15 @@ export async function getLocationStats() {
 }
 
 export async function searchLocations(params: {
+  city?: string;
   latitude?: number;
   longitude?: number;
   page?: number;
   limit?: number;
 }) {
   const searchParams = new URLSearchParams();
+  if (params?.city)
+    searchParams.append("city", params.city.toString());
   if (params?.latitude)
     searchParams.append("latitude", params.latitude.toString());
   if (params?.longitude)
@@ -778,10 +782,10 @@ export async function getStatusOptions() {
 // TODO Get location details with address
 export async function getLocationDetails(locationId: number): Promise<{
   id: number;
+  city?: string;
   latitude: number;
   longitude: number;
   address?: string;
-  city?: string;
   country?: string;
 }> {
   return request(`/locations/${locationId}/details`);

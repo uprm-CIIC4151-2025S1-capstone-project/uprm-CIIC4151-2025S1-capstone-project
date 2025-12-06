@@ -116,10 +116,15 @@ class LocationsDAO:
     def get_locations_with_reports_count(self, limit, offset):
         """Get locations with count of associated reports"""
         query = """
-            SELECT l.*, COUNT(r.id) as report_count
+            SELECT 
+                l.id,
+                l.city,
+                l.latitude,
+                l.longitude,
+                COUNT(r.id) AS report_count
             FROM location l
             LEFT JOIN reports r ON l.id = r.location
-            GROUP BY l.id
+            GROUP BY l.id, l.city, l.latitude, l.longitude
             ORDER BY report_count DESC
             LIMIT %s OFFSET %s
         """
