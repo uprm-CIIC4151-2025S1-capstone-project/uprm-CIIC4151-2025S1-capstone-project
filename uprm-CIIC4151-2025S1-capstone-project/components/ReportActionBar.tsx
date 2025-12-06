@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ReportData, ReportStatus } from "@/types/interfaces";
 import { useAppColors } from "@/hooks/useAppColors";
+import { useRouter } from "expo-router";
 
 interface ReportActionBarProps {
   report: ReportData;
@@ -17,6 +18,7 @@ interface ReportActionBarProps {
   isRating: boolean;
   isRated: boolean;
   ratingCount: number;
+  showBack?: boolean; // <-- optional prop to control internal Back button
 }
 
 export const ReportActionBar = ({
@@ -30,16 +32,18 @@ export const ReportActionBar = ({
   isRating,
   isRated,
   ratingCount,
+  showBack = true, // default true for backward compatibility
 }: ReportActionBarProps) => {
   const { user } = useAuth();
   const { colors } = useAppColors();
   const [statusMenuVisible, setStatusMenuVisible] = useState(false);
+  const router = useRouter();
 
   const isAuthor = user?.id === report.created_by;
   const isAdmin = user?.isAdmin;
 
   // Permission checks
-  const canEdit = isAuthor;
+  const canEdit = false; //isAuthor;
   const canChangeStatus = isAdmin;
   const canPin = !!user && !isPinning;
   const canRate = !!user && !isRating;
@@ -61,6 +65,20 @@ export const ReportActionBar = ({
     <View style={styles.container}>
       {/* Left side: User actions */}
       <View style={styles.leftActions}>
+        {/* Internal Back button (optional) */}
+        {showBack && (
+          <Button
+            mode="text"
+            onPress={() => router.back()}
+            icon="arrow-left"
+            compact
+            textColor={colors.text}
+            style={{ marginRight: 8 }}
+          >
+            Back
+          </Button>
+        )}
+
         {/* Rating button */}
         {canRate && (
           <View style={styles.ratingContainer}>

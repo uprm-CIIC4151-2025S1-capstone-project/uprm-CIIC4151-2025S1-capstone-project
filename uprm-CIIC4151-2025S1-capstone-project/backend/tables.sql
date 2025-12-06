@@ -1,4 +1,7 @@
 -- Drop tables in correct order to handle foreign key dependencies
+
+DROP TABLE IF EXISTS report_ratings;
+
 DROP TABLE IF EXISTS pinned_reports;
 
 DROP TABLE IF EXISTS department_admins;
@@ -22,7 +25,7 @@ CREATE TABLE users (
     PASSWORD VARCHAR(255) NOT NULL,
     ADMIN BOOLEAN DEFAULT FALSE,
     suspended BOOLEAN DEFAULT FALSE,
-    pinned BOOLEAN DEFAULT FALSE,
+    pinned BOOLEAN DEFAULT FALSE, -- not used
     total_reports INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -92,10 +95,7 @@ CREATE TABLE reports (
     resolved_at TIMESTAMP,
     location INTEGER REFERENCES location (id),
     image_url VARCHAR,
-    rating INTEGER CHECK (
-        rating >= 1
-        AND rating <= 5
-    )
+    rating INTEGER DEFAULT 0
 );
 
 -- Department admins junction table
@@ -110,7 +110,7 @@ CREATE TABLE department_admins (
 CREATE TABLE pinned_reports (
     user_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
     report_id INTEGER REFERENCES reports (id) ON DELETE CASCADE,
-    pinned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pinned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- not used 
     PRIMARY KEY (user_id, report_id)
 );
 
@@ -120,6 +120,14 @@ CREATE TABLE admin_codes (
     department VARCHAR NOT NULL CHECK (
         department IN ('DTOP', 'LUMA', 'AAA', 'DDS')
     )
+);
+
+CREATE TABLE report_ratings (
+  id SERIAL PRIMARY KEY,
+  report_id INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (report_id, user_id)
 );
 
 -- Create indexes for better performance
@@ -622,7 +630,7 @@ INSERT INTO
         resolved_by,
         location,
         image_url,
-        rating,
+        rating, -- aqui deberia ser 0 no null
         created_at,
         resolved_at
     )

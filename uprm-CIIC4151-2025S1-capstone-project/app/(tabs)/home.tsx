@@ -1,3 +1,4 @@
+// TODO Remove onViewAll 
 import FABCreateReport from "@/components/FABCreateReport";
 import PinnedReports from "@/components/PinnedReports";
 import QuickActionsCard from "@/components/QuickActionsCard";
@@ -169,7 +170,7 @@ export default function HomeScreen() {
         <PinnedReports
           pinnedReports={pinnedReports}
           error={error}
-          onViewAll={handleViewAllPinned}
+          // onViewAll={handleViewAllPinned}
           onRetry={loadHomeData}
           onReportPress={handleReportPress}
         />

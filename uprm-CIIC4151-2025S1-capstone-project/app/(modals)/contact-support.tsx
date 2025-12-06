@@ -1,3 +1,4 @@
+// TODO Code cleanup
 import { ThemedView } from "@/components/themed-view";
 import { StyleSheet, ScrollView, Linking, Alert } from "react-native";
 import { Button, Text, Card, Divider } from "react-native-paper";
@@ -38,7 +39,7 @@ export default function ContactSupportModal() {
   const handleCallPress = () => {
     Alert.alert(
       "Contact Support",
-      "Call our support team at +1 (555) 123-4567?",
+      "Call our support team at 911?",
       [
         {
           text: "Cancel",
@@ -46,14 +47,14 @@ export default function ContactSupportModal() {
         },
         {
           text: "Call",
-          onPress: () => Linking.openURL("tel:+15551234567"),
+          onPress: () => Linking.openURL("tel:911"),
         },
       ]
     );
   };
 
   const handleWebsitePress = () => {
-    Linking.openURL("http://github.com/Jonathan-Rod/uprm-CIIC4151-2025S1-capstone-project/blob/main/README.md");
+    Linking.openURL("https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project");
   };
 
   const handleFAQPress = () => {
@@ -68,7 +69,7 @@ export default function ContactSupportModal() {
         {
           text: "Visit Website",
           onPress: () =>
-            Linking.openURL("https://www.communityreports.com/help"),
+            Linking.openURL("https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project"),
         },
       ]
     );
@@ -76,7 +77,7 @@ export default function ContactSupportModal() {
 
   const handleEmergencyPress = () => {
     Alert.alert(
-      "⚠️ Emergency Contact",
+      "Emergency Contact",
       "For urgent matters requiring immediate attention, please contact local authorities directly.\n\nThis support channel is for app-related issues only.",
       [
         {
@@ -129,7 +130,7 @@ export default function ContactSupportModal() {
             </Card.Content>
           </Card>
 
-          <Card style={styles.contactCard}>
+          {/* <Card style={styles.contactCard}>
             <Card.Content>
               <Text variant="titleMedium" style={styles.cardTitle}>
                 Phone Support
@@ -147,9 +148,9 @@ export default function ContactSupportModal() {
                 Call +1 (555) 123-4567
               </Button>
             </Card.Content>
-          </Card>
+          </Card> */}
 
-          <Card style={styles.contactCard}>
+          {/* <Card style={styles.contactCard}>
             <Card.Content>
               <Text variant="titleMedium" style={styles.cardTitle}>
                 FAQ & Help Center
@@ -164,10 +165,11 @@ export default function ContactSupportModal() {
                 icon="help-circle"
                 textColor={colors.text}
               >
+
                 Browse Help Center
               </Button>
             </Card.Content>
-          </Card>
+          </Card> */}
 
           <Card style={styles.contactCard}>
             <Card.Content>

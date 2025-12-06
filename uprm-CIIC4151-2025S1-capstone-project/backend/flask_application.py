@@ -99,7 +99,9 @@ def handle_reports():
         limit = request.args.get("limit", default=10, type=int)
         sort = request.args.get("sort")
         admin_id = request.args.get("admin_id", type=int)
-        return handler.get_all_reports(page, limit, sort, admin_id)
+        location_id = request.args.get("location_id", type=int)
+        city = request.args.get("city")  # e.g. "Carolina"
+        return handler.get_all_reports(page, limit, sort, admin_id, location_id, city)
 
 
 @app.route("/reports/<int:report_id>", methods=["GET", "PUT", "DELETE"])
@@ -470,7 +472,9 @@ def search_reports():
     page = request.args.get("page", default=1, type=int)
     limit = request.args.get("limit", default=10, type=int)
     admin_id = request.args.get("admin_id", type=int)
-    return handler.search_reports(query, page, limit, status, category, sort, admin_id)
+    location_id = request.args.get("location_id", type=int)
+    city = request.args.get("city")
+    return handler.search_reports(query, page, limit, status, category, sort, admin_id, location_id, city)
 
 
 @app.route("/reports/filter", methods=["GET"])
@@ -482,7 +486,10 @@ def filter_reports():
     page = request.args.get("page", default=1, type=int)
     limit = request.args.get("limit", default=10, type=int)
     admin_id = request.args.get("admin_id", type=int)
-    return handler.filter_reports(status, category, page, limit, sort, admin_id)
+    location_id = request.args.get("location_id", type=int)
+    city = request.args.get("city")
+    return handler.filter_reports(status, category, page, limit, sort, admin_id, location_id, city)
+
 
 
 @app.route("/reports/user/<int:user_id>", methods=["GET"])
@@ -570,6 +577,32 @@ def system_health():
 def get_reports_for_admin(admin_id):
     handler = AdministratorsHandler()
     return handler.get_reports_for_admin(admin_id)
+
+# -------------------------------------------------------
+# REPORTS - TOGGLE / UNRATE
+# -------------------------------------------------------
+@app.route("/reports/<int:report_id>/toggle-rate", methods=["POST"])
+def toggle_rate_report(report_id):
+    data = request.json
+    user_id = data.get("user_id")
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
+
+    handler = ReportsHandler()
+    return handler.toggle_rate_report(report_id, {"user_id": user_id})
+
+
+
+@app.route("/reports/<int:report_id>/unrate", methods=["POST"])
+def unrate_report(report_id):
+    data = request.json
+    user_id = data.get("user_id")
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
+
+    handler = ReportsHandler()
+    return handler.unrate_report(report_id, {"user_id": user_id})
+
 
 
 # -------------------------------------------------------

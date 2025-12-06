@@ -1,3 +1,4 @@
+// TODO Code cleanup
 import { ThemedView } from "@/components/themed-view";
 import { useRouter } from "expo-router";
 import { StyleSheet, View, ScrollView, Alert } from "react-native";
@@ -153,22 +154,24 @@ export default function UpdateProfileModal() {
         return;
       }
 
-      const res = await upgradeToAdmin(
+      const response = await upgradeToAdmin(
         credentials.userId,
         formData.adminCode.trim()
       );
 
-      if (res?.success) {
+      if (response?.success) {
         Alert.alert(
           "Success",
-          res.department
-            ? `You have been upgraded to admin in ${res.department}.`
+          response.department
+            ? `You have been upgraded to admin in ${response.department}.`
             : "You have been upgraded to admin."
         );
         // Optionally reset the code box
         setFormData((prev) => ({ ...prev, adminCode: "" }));
+
+        // TODO save admin credentials
       } else {
-        Alert.alert("Invalid Code", res?.error_msg || "Code not recognized.");
+        Alert.alert("Invalid Code", response?.error_msg || "Code not recognized.");
       }
     } catch (err: any) {
       console.error("Upgrade admin error:", err);
@@ -199,8 +202,9 @@ export default function UpdateProfileModal() {
             Update Profile
           </Text>
 
+
           {/* Email Section */}
-          <View style={[styles.section, { borderLeftColor: colors.primary }]}>
+          {/* <View style={[styles.section, { borderLeftColor: colors.primary }]}>
             <Text
               variant="titleSmall"
               style={[styles.sectionTitle, { color: colors.primary }]}
@@ -229,10 +233,10 @@ export default function UpdateProfileModal() {
             {errors.email ? (
               <Text style={styles.errorText}>{errors.email}</Text>
             ) : null}
-          </View>
+          </View> */}
 
           {/* Password Section */}
-          <View style={[styles.section, { borderLeftColor: colors.info }]}>
+          {/* <View style={[styles.section, { borderLeftColor: colors.info }]}>
             <Text
               variant="titleSmall"
               style={[styles.sectionTitle, { color: colors.info }]}
@@ -298,7 +302,7 @@ export default function UpdateProfileModal() {
             {errors.confirmPassword ? (
               <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             ) : null}
-          </View>
+          </View> */}
 
           {/* Admin Upgrade Section */}
           <View style={[styles.section, { borderLeftColor: colors.warning }]}>
@@ -357,7 +361,7 @@ export default function UpdateProfileModal() {
           </View>
 
           {/* Action Buttons */}
-          <View style={styles.actionButtons}>
+          {/* <View style={styles.actionButtons}>
             <Button
               mode="outlined"
               onPress={() => router.back()}
@@ -377,7 +381,7 @@ export default function UpdateProfileModal() {
             >
               Update Profile
             </Button>
-          </View>
+          </View> */}
         </ScrollView>
       </ThemedView>
     </SafeAreaView>

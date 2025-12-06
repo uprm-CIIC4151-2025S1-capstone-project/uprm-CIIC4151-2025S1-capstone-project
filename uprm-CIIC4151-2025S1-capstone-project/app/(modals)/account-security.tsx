@@ -1,3 +1,4 @@
+// TODO Code cleanup and add comments explaining the overall idea
 import { ThemedView } from "@/components/themed-view";
 import { useRouter } from "expo-router";
 import { StyleSheet, View, ScrollView, Alert, Switch } from "react-native";
@@ -14,9 +15,9 @@ export default function AccountSecurityModal() {
   const [settings, setSettings] = useState({
     biometricAuth: false,
     twoFactorAuth: false,
-    sessionTimeout: true,
-    emailNotifications: true,
-    pushNotifications: true,
+    sessionTimeout: false,
+    emailNotifications: false,
+    pushNotifications: false,
   });
 
   const handleSettingToggle = (setting: keyof typeof settings) => {
@@ -356,7 +357,7 @@ export default function AccountSecurityModal() {
           </View> */}
 
           {/* Action Buttons */}
-          <View style={styles.actionButtons}>
+          {/* <View style={styles.actionButtons}>
             <Button
               mode="outlined"
               onPress={() => router.back()}
@@ -376,7 +377,7 @@ export default function AccountSecurityModal() {
             >
               Save Settings
             </Button>
-          </View>
+          </View> */}
         </ScrollView>
 
         {/* <View style={styles.buttonContainer}>

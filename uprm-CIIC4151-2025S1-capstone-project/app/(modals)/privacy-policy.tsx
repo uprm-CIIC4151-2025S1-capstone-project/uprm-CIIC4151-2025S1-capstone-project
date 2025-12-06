@@ -1,3 +1,4 @@
+// TODO Code cleanup
 import { ThemedView } from "@/components/themed-view";
 import { useAppColors } from "@/hooks/useAppColors";
 import { StyleSheet, View, ScrollView, Linking } from "react-native";
@@ -10,12 +11,12 @@ export default function PrivacyPolicyModal() {
 
   const handleContactPrivacy = () => {
     Linking.openURL(
-      "mailto:privacy@communityreports.com?subject=Privacy Policy Inquiry"
+      "mailto:https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project"
     );
   };
 
   const handleViewFullPolicy = () => {
-    Linking.openURL("https://www.communityreports.com/privacy-policy");
+    Linking.openURL("https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project");
   };
 
   const styles = createStyles(colors);
@@ -82,7 +83,7 @@ export default function PrivacyPolicyModal() {
             >
               View Full Policy
             </Button>
-            <Button
+            {/* <Button
               mode="outlined"
               onPress={handleContactPrivacy}
               style={styles.actionButton}
@@ -90,7 +91,7 @@ export default function PrivacyPolicyModal() {
               textColor={colors.primary}
             >
               Contact Privacy Team
-            </Button>
+            </Button> */}
           </View>
         </ScrollView>
 

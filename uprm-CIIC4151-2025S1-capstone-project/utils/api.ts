@@ -19,7 +19,7 @@ const getApiBaseUrl = () => {
 
     // iOS (Expo Go on physical device)
     if (Platform.OS === "ios") {
-      const iosUrl = "http://192.168.4.49:5000";
+      const iosUrl = "http://192.168.4.112:5000";
       console.log("Using iOS URL:", iosUrl);
       return iosUrl;
     }
@@ -132,12 +132,16 @@ async function request(endpoint: string, method = "GET", body?: any) {
     if (!response.ok) {
       if (response.status === 401)
         throw new Error("Authentication failed - Please log in again");
-      if (response.status === 401)
-        throw new Error("Authentication failed - Please log in again");
       if (response.status === 403) throw new Error("Access forbidden");
       if (response.status === 404) throw new Error("Resource not found");
       if (response.status >= 500) throw new Error("Server error");
+      // try to parse body for error message
+      try {
+        const errJson = await response.json();
+        throw new Error(errJson.error || errJson.error_msg || response.statusText);
+      } catch {
       throw new Error(`API error: ${response.status}`);
+      }
     }
 
     if (response.status === 204) return null;
@@ -163,7 +167,7 @@ async function request(endpoint: string, method = "GET", body?: any) {
 // =============================================================================
 export async function login(data: { email: string; password: string }) {
   const result = await request("/login", "POST", data);
-  if (result && result.success) return result;
+  if (result && (result.success || result.token || result.id)) return result;
   throw new Error(result?.error_msg || "Login failed");
 }
 
@@ -221,7 +225,9 @@ export async function upgradeToAdmin(userId: number, code: string) {
 export async function getReports(
   page?: number,
   limit?: number,
-  sort?: "asc" | "desc"
+  sort?: "asc" | "desc",
+  location_id?: number,
+  city?: string
 ) {
   const params = new URLSearchParams();
   if (page) params.append("page", page.toString());
@@ -230,6 +236,9 @@ export async function getReports(
 
   const creds = await getStoredCredentials();
   if (creds) params.append("admin_id", creds.userId.toString());
+
+  if (location_id) params.append("location_id", String(location_id));
+  if (city) params.append("city", city);
 
   return request(`/reports?${params.toString()}`);
 }
@@ -277,11 +286,18 @@ export async function resolveReport(
   return request(`/reports/${reportId}/resolve`, "POST", data);
 }
 
-export async function rateReport(
-  reportId: number,
-  data: { rating: number }
-) {
-  return request(`/reports/${reportId}/rate`, "POST", data);
+export async function rateReport(reportId: number) {
+  // Toggle the one-star rating (like) for the current user.
+  const credentials = await getStoredCredentials();
+  if (!credentials) throw new Error("User not authenticated");
+
+  // Use the toggle endpoint implemented in the backend
+  const result = await request(`/reports/${reportId}/toggle-rate`, "POST", {
+    user_id: credentials.userId,
+  });
+
+  // result will contain rated / rating / total_ratings etc.
+  return result;
 }
 
 // =============================================================================
@@ -293,7 +309,9 @@ export async function searchReports(
   category?: string,
   page?: number,
   limit?: number,
-  sort?: "asc" | "desc"
+  sort?: "asc" | "desc",
+  location_id?: number,
+  city?: string
 ) {
   const params = new URLSearchParams();
   if (query) params.append("q", query);
@@ -306,6 +324,9 @@ export async function searchReports(
   const creds = await getStoredCredentials();
   if (creds) params.append("admin_id", creds.userId.toString());
 
+  if (location_id) params.append("location_id", String(location_id));
+  if (city) params.append("city", city);
+
   return request(`/reports/search?${params.toString()}`);
 }
 
@@ -314,7 +335,9 @@ export async function filterReports(
   category?: string,
   page?: number,
   limit?: number,
-  sort?: "asc" | "desc"
+  sort?: "asc" | "desc",
+  location_id?: number,
+  city?: string
 ) {
   const params = new URLSearchParams();
   if (status) params.append("status", status);
@@ -325,6 +348,9 @@ export async function filterReports(
 
   const creds = await getStoredCredentials();
   if (creds) params.append("admin_id", creds.userId.toString());
+
+  if (location_id) params.append("location_id", String(location_id));
+  if (city) params.append("city", city);
 
   return request(`/reports/filter?${params.toString()}`);
 }
@@ -416,6 +442,46 @@ export async function searchLocations(params: {
   if (params?.limit) searchParams.append("limit", params.limit.toString());
   const query = searchParams.toString();
   return request(`/locations/search${query ? `?${query}` : ""}`);
+}
+
+// =============================================================================
+// LOCATION AUTOCOMPLETE / CITY SEARCH (NEW)
+// =============================================================================
+
+/**
+ * Autocomplete locations by city name.
+ * Calls your backend `/locations/search?q=...&limit=...&prefix=1`
+ * Returns: { locations: [{ id, city }, ...] } or similar - the request wrapper returns parsed JSON.
+ */
+export async function autocompleteLocations(
+  q: string,
+  limit = 20,
+  prefix = true
+): Promise<any> {
+  const params = new URLSearchParams();
+  if (q) params.append("q", q);
+  params.append("limit", String(limit));
+  params.append("prefix", prefix ? "1" : "0");
+  // backend route currently is /locations/search
+  return request(`/locations/search?${params.toString()}`);
+}
+
+/**
+ * Search distinct cities (optionally include counts).
+ * If your backend supports include_counts, it returns [{city, count}, ...].
+ */
+export async function searchCities(
+  q = "",
+  limit = 20,
+  prefix = true,
+  include_counts = false
+) {
+  const params = new URLSearchParams();
+  if (q) params.append("q", q);
+  params.append("limit", String(limit));
+  params.append("prefix", prefix ? "1" : "0");
+  if (include_counts) params.append("include_counts", "1");
+  return request(`/locations/search?${params.toString()}`);
 }
 
 // =============================================================================
@@ -649,8 +715,7 @@ export async function getDepartmentOverviewStats(department: string) {
 export async function getUserStats(userId: number) {
   const creds = await getStoredCredentials();
   if (!creds) throw new Error("Not authenticated");
-  if (creds.userId !== userId)
-    throw new Error("User ID mismatch");
+  if (creds.userId !== userId) throw new Error("User ID mismatch");
 
   return request(`/stats/user/${userId}`);
 }
@@ -707,16 +772,34 @@ export async function testConnection() {
 // TODO REPORT ACTIONS - MISSING ROUTES IN BACKEND (in progress)
 // =============================================================================
 
-// TODO Add/Remove rating (like) to report
+// Toggle rating (like) for a report
+// Toggle rating (like) for a report
 export async function toggleRating(
   reportId: number
 ): Promise<{ rating: number; rated: boolean }> {
   const credentials = await getStoredCredentials();
   if (!credentials) throw new Error("User not authenticated");
 
-  return request(`/reports/${reportId}/rate`, "POST", {
+  // Matches Flask handler /reports/<id>/toggle-rate
+  const result = await request(`/reports/${reportId}/toggle-rate`, "POST", {
     user_id: credentials.userId,
   });
+
+  return result; // { rating: total_rating, rated: true/false }
+}
+
+// Remove user rating from a report
+export async function unrateReport(
+  reportId: number
+): Promise<{ rating: number; rated: false }> {
+  const credentials = await getStoredCredentials();
+  if (!credentials) throw new Error("User not authenticated");
+
+  const result = await request(`/reports/${reportId}/unrate`, "POST", {
+    user_id: credentials.userId,
+  });
+
+  return result; // { rating: total_rating, rated: false }
 }
 
 // TODO Check if user rated the report
@@ -726,17 +809,14 @@ export async function checkReportRated(
   const credentials = await getStoredCredentials();
   if (!credentials) throw new Error("User not authenticated");
 
+  // Matches Flask handler /reports/<id>/rating-status?user_id=<user_id>
   return request(
     `/reports/${reportId}/rating-status?user_id=${credentials.userId}`
   );
 }
 
 // TODO Get rating count for report
-export async function getReportRating(
-  reportId: number
-): Promise<{ rating: number }> {
-  return request(`/reports/${reportId}/rating`);
-}
+
 
 // TODO Check if report is pinned by current user
 export async function checkReportPinned(

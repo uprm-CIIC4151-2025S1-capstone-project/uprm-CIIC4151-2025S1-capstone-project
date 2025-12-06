@@ -77,6 +77,9 @@ export default function ReportScreen() {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc"); // newest first
 
+  // location filter (manual dropdown only)
+  const [location, setlocation] = useState<string | null>(null);
+
   // admin info
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminDepartment, setAdminDepartment] = useState<string | null>(null);
@@ -116,19 +119,21 @@ export default function ReportScreen() {
         setIsLoadingMore(true);
       }
 
-      // If we're actively searching, the unified search path handles it
+      // If actively searching, the unified search path handles it
       if (query.trim()) return;
 
       let resp: ReportsResponse;
 
-      if (statusFilter || categoryFilter) {
+      if (statusFilter || categoryFilter || location) {
         // Filtered results (server-side; first page only)
         resp = (await filterReports(
           statusFilter || undefined,
           categoryFilter || undefined,
           1,
           limit,
-          sortOrder
+          sortOrder,
+          undefined, // locationId removed
+          location || undefined
         )) as ReportsResponse;
 
         const serverReports = resp.reports || [];
@@ -139,7 +144,13 @@ export default function ReportScreen() {
         setTotalPages(resp.totalPages || 1);
       } else {
         // ALL (paginated, server-side sort)
-        resp = (await getReports(page, limit, sortOrder)) as ReportsResponse;
+        resp = (await getReports(
+          page,
+          limit,
+          sortOrder,
+          undefined, // locationId removed
+          location || undefined
+        )) as ReportsResponse;
 
         const serverReports = resp.reports || [];
         const filteredReports = applyAdminDepartmentFilter(serverReports);
@@ -161,12 +172,11 @@ export default function ReportScreen() {
     }
   };
 
-  // Unified server-side search (q + status + category + sort)
   const loadSearchResults = async (q: string, nextStatus?: StatusFilter) => {
     const effectiveStatus = nextStatus ?? statusFilter;
 
-    // If no query and no status/category selected, fall back to feed
-    if (!q.trim() && !effectiveStatus && !categoryFilter) {
+    // If no query and no filters selected, fall back to feed
+    if (!q.trim() && !effectiveStatus && !categoryFilter && !location) {
       setIsSearching(false);
       await loadExploreReports(1, true);
       return;
@@ -183,7 +193,9 @@ export default function ReportScreen() {
         categoryFilter || undefined,
         1,
         limit,
-        sortOrder
+        sortOrder,
+        undefined, // locationId removed
+        location || undefined
       )) as ReportsResponse;
 
       const serverReports = resp.reports || [];
@@ -203,8 +215,6 @@ export default function ReportScreen() {
   // -------------------------
   // Effects
   // -------------------------
-
-  // 1) initial load: fetch admin info first, then load reports
   useEffect(() => {
     const init = async () => {
       try {
@@ -229,27 +239,20 @@ export default function ReportScreen() {
         setIsAdmin(false);
         setAdminDepartment(null);
       } finally {
-        // ✅ Now that admin state is set (or failed), load reports
         await loadExploreReports(1, true);
       }
     };
-
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2) when status/category/sort changes:
-  // if there is an active search term, re-run search; else load filtered/sorted feed
   useEffect(() => {
     if (query.trim()) {
       loadSearchResults(query, statusFilter);
     } else {
       loadExploreReports(1, true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, categoryFilter, sortOrder]);
+  }, [statusFilter, categoryFilter, sortOrder, location]);
 
-  // 3) debounce query changes
   useEffect(() => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
@@ -258,24 +261,20 @@ export default function ReportScreen() {
     return () => {
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  // 4) re-apply admin filter when admin info changes
   useEffect(() => {
     setReports((prev) => applyAdminDepartmentFilter(prev));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin, adminDepartment]);
 
   // -------------------------
   // UI handlers
   // -------------------------
   const loadMoreReports = async () => {
-    if (isSearching) return; // disable infinite scroll during search
-    if (statusFilter || categoryFilter) return; // no pagination for filtered list (first page only)
+    if (isSearching) return;
+    if (statusFilter || categoryFilter || location) return;
     if (currentPage >= totalPages || isLoadingMore || refreshing) return;
-    const nextPage = currentPage + 1;
-    await loadExploreReports(nextPage, false);
+    await loadExploreReports(currentPage + 1, false);
   };
 
   const onRefresh = () => {
@@ -297,13 +296,6 @@ export default function ReportScreen() {
     router.push("/(modals)/report-form");
   };
 
-  const onSelectFilter = (value: StatusFilter) => {
-    setMenuVisible(false);
-    setStatusFilter(value);
-    // when changing the filter, clear search
-    if (query) setQuery("");
-  };
-
   const renderReportItem = ({ item }: { item: ReportData }) => (
     <ReportCard
       report={{ ...item, category: item.category as ReportCategory }}
@@ -312,55 +304,28 @@ export default function ReportScreen() {
   );
 
   const renderFooter = () => {
-    if (isSearching || statusFilter || categoryFilter || !isLoadingMore) {
-      return null;
-    }
-    return (
-      <ActivityIndicator
-        style={{ paddingVertical: 16 }}
-        size="small"
-        color={colors.primary}
-      />
-    );
+    if (isSearching || statusFilter || categoryFilter || !isLoadingMore) return null;
+    return <ActivityIndicator style={{ paddingVertical: 16 }} size="small" color={colors.primary} />;
   };
 
   const renderEmptyComponent = () => {
-    if (refreshing) {
-      return (
-        <ActivityIndicator
-          size="large"
-          style={{ marginTop: 32 }}
-          color={colors.primary}
-        />
-      );
-    }
-
-    if (error) {
+    if (refreshing) return <ActivityIndicator size="large" style={{ marginTop: 32 }} color={colors.primary} />;
+    if (error)
       return (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Error: {error}</Text>
-          <Button
-            mode="outlined"
-            onPress={onRefresh}
-            style={styles.retryButton}
-            textColor={colors.error}
-          >
+          <Button mode="outlined" onPress={onRefresh} style={styles.retryButton} textColor={colors.error}>
             Retry
           </Button>
         </View>
       );
-    }
 
-    const hasFilter = !!(query.trim() || statusFilter || categoryFilter);
+    const hasFilter = !!(query.trim() || statusFilter || categoryFilter || location);
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>
-          {hasFilter ? "No results found." : "No reports available."}
-        </Text>
+        <Text style={styles.emptyText}>{hasFilter ? "No results found." : "No reports available."}</Text>
         <Text style={styles.emptySubtext}>
-          {hasFilter
-            ? "Try a different keyword, status, category, or sort."
-            : "Be the first to create a report!"}
+          {hasFilter ? "Try a different keyword, status, category, city, or sort." : "Be the first to create a report!"}
         </Text>
       </View>
     );
@@ -401,12 +366,7 @@ export default function ReportScreen() {
         renderItem={renderReportItem}
         keyExtractor={(item) => item.id.toString()}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} tintColor={colors.primary} />
         }
         onEndReached={loadMoreReports}
         onEndReachedThreshold={0.5}
@@ -424,18 +384,20 @@ export default function ReportScreen() {
         status={statusFilter}
         category={categoryFilter}
         sortOrder={sortOrder}
-        onApply={({
-          status,
-          category,
-          sortOrder: nextSort,
-        }: {
-          status: StatusFilter;
-          category: CategoryFilter;
-          sortOrder: SortOrder;
-        }) => {
+        location={location}
+        onApply={({ status, category, sortOrder: nextSort, location }) => {
           setStatusFilter(status);
           setCategoryFilter(category);
           setSortOrder(nextSort);
+          setlocation(location || null);
+
+          if (query.trim()) {
+            loadSearchResults(query, status);
+          } else {
+            loadExploreReports(1, true);
+          }
+
+          setFilterSheetVisible(false);
         }}
       />
     </SafeAreaView>
@@ -444,71 +406,18 @@ export default function ReportScreen() {
 
 const createStyles = (colors: any) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      margin: 16,
-      fontWeight: "bold",
-      color: colors.text,
-      textAlign: "center",
-    },
-    row: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-      paddingHorizontal: 16,
-      marginBottom: 8,
-    },
-    searchFlex: {
-      flex: 1,
-    },
-    searchbar: {
-      borderRadius: 12,
-      backgroundColor: colors.surface,
-      elevation: 0,
-    },
-    filterBtn: {
-      margin: 0,
-    },
-    listContainer: {
-      paddingHorizontal: 16,
-      paddingBottom: 32,
-      flexGrow: 1,
-    },
-    errorContainer: {
-      padding: 16,
-      alignItems: "center",
-    },
-    errorText: {
-      textAlign: "center",
-      marginBottom: 12,
-      color: colors.error,
-    },
-    retryButton: {
-      marginTop: 8,
-      borderColor: colors.error,
-    },
-    emptyContainer: {
-      alignItems: "center",
-      paddingVertical: 32,
-    },
-    emptyText: {
-      textAlign: "center",
-      fontSize: 16,
-      marginBottom: 8,
-      color: colors.textSecondary,
-    },
-    emptySubtext: {
-      textAlign: "center",
-      fontSize: 14,
-      color: colors.textMuted,
-    },
-    fab: {
-      position: "absolute",
-      margin: 16,
-      right: 0,
-      bottom: 0,
-    },
+    container: { flex: 1, backgroundColor: colors.background },
+    header: { margin: 16, fontWeight: "bold", color: colors.text, textAlign: "center" },
+    row: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, marginBottom: 8 },
+    searchFlex: { flex: 1 },
+    searchbar: { borderRadius: 12, backgroundColor: colors.surface, elevation: 0 },
+    filterBtn: { margin: 0 },
+    listContainer: { paddingHorizontal: 16, paddingBottom: 32, flexGrow: 1 },
+    errorContainer: { padding: 16, alignItems: "center" },
+    errorText: { textAlign: "center", marginBottom: 12, color: colors.error },
+    retryButton: { marginTop: 8, borderColor: colors.error },
+    emptyContainer: { alignItems: "center", paddingVertical: 32 },
+    emptyText: { textAlign: "center", fontSize: 16, marginBottom: 8, color: colors.textSecondary },
+    emptySubtext: { textAlign: "center", fontSize: 14, color: colors.textMuted },
+    fab: { position: "absolute", margin: 16, right: 0, bottom: 0 },
   });
