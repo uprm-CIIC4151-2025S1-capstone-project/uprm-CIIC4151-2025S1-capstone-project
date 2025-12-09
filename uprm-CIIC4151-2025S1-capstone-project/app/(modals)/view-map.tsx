@@ -11,8 +11,8 @@ export default function ViewMapScreen() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await getLocationsWithReports(1, 10);
-        setLocations(res.locations || []);
+        const response = await getLocationsWithReports(1, 10);
+        setLocations(response.locations || []);
       } catch (err) {
         console.error("Error loading locations:", err);
       } finally {
@@ -47,7 +47,7 @@ export default function ViewMapScreen() {
 
       <DataTable>
         <DataTable.Header>
-          <DataTable.Title style={styles.colRank}>#</DataTable.Title>
+          {/* Removed the rank column header */}
           <DataTable.Title style={styles.colCity}>Location</DataTable.Title>
           <DataTable.Title numeric style={styles.colCount}>
             Reports
@@ -56,9 +56,7 @@ export default function ViewMapScreen() {
 
         {locations.map((loc, index) => (
           <DataTable.Row key={loc.id}>
-            <DataTable.Cell style={styles.colRank}>
-              <Text>{index + 1}</Text>
-            </DataTable.Cell>
+            {/* Removed the rank column cell */}
             <DataTable.Cell style={styles.colCity}>
               <Text>{loc.city}</Text>
             </DataTable.Cell>
@@ -76,7 +74,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 12 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   title: { marginBottom: 8 },
-  colRank: { flex: 0.7 },
   colCity: { flex: 3 },
   colCount: { flex: 1.3 },
 });

@@ -110,7 +110,7 @@ CREATE TABLE department_admins (
 CREATE TABLE pinned_reports (
     user_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
     report_id INTEGER REFERENCES reports (id) ON DELETE CASCADE,
-    pinned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- not used 
+    pinned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- not used
     PRIMARY KEY (user_id, report_id)
 );
 
@@ -630,7 +630,7 @@ INSERT INTO
         resolved_by,
         location,
         image_url,
-        rating, -- aqui deberia ser 0 no null
+        rating,
         created_at,
         resolved_at
     )
@@ -646,7 +646,7 @@ VALUES
         NULL,
         65,
         NULL,
-        NULL,
+        0,
         '2024-01-15 08:30:00',
         NULL
     ),
@@ -661,7 +661,7 @@ VALUES
         NULL,
         65,
         NULL,
-        NULL,
+        0,
         '2024-01-16 14:20:00',
         NULL
     ),
@@ -691,7 +691,7 @@ VALUES
         NULL,
         65,
         NULL,
-        NULL,
+        0,
         '2024-01-17 11:00:00',
         NULL
     ),
@@ -706,7 +706,7 @@ VALUES
         NULL,
         13,
         NULL,
-        NULL,
+        0,
         '2024-01-14 16:45:00',
         NULL
     ),
@@ -721,7 +721,7 @@ VALUES
         NULL,
         11,
         NULL,
-        NULL,
+        0,
         '2024-01-18 07:30:00',
         NULL
     ),
@@ -751,7 +751,7 @@ VALUES
         NULL,
         32,
         NULL,
-        NULL,
+        0,
         '2024-01-19 20:00:00',
         NULL
     ),
@@ -766,7 +766,7 @@ VALUES
         NULL,
         16,
         NULL,
-        NULL,
+        0,
         '2024-01-13 15:30:00',
         NULL
     ),
@@ -781,7 +781,7 @@ VALUES
         NULL,
         13,
         NULL,
-        NULL,
+        0,
         '2024-01-20 09:45:00',
         NULL
     ),
@@ -811,7 +811,7 @@ VALUES
         NULL,
         7,
         NULL,
-        NULL,
+        0,
         '2024-01-21 12:15:00',
         NULL
     ),
@@ -826,7 +826,7 @@ VALUES
         NULL,
         36,
         NULL,
-        NULL,
+        0,
         '2024-01-16 08:00:00',
         NULL
     ),
@@ -841,7 +841,7 @@ VALUES
         NULL,
         58,
         NULL,
-        NULL,
+        0,
         '2024-01-22 14:30:00',
         NULL
     ),
@@ -871,7 +871,7 @@ VALUES
         NULL,
         12,
         NULL,
-        NULL,
+        0,
         '2024-01-23 10:45:00',
         NULL
     ),
@@ -886,7 +886,7 @@ VALUES
         NULL,
         78,
         NULL,
-        NULL,
+        0,
         '2024-01-17 18:30:00',
         NULL
     ),
@@ -901,7 +901,7 @@ VALUES
         NULL,
         64,
         NULL,
-        NULL,
+        0,
         '2024-01-24 07:15:00',
         NULL
     ),
@@ -931,7 +931,7 @@ VALUES
         NULL,
         70,
         NULL,
-        NULL,
+        0,
         '2024-01-25 13:20:00',
         NULL
     ),
@@ -946,7 +946,7 @@ VALUES
         NULL,
         45,
         NULL,
-        NULL,
+        0,
         '2024-01-11 09:30:00',
         NULL
     ),
@@ -961,7 +961,7 @@ VALUES
         NULL,
         47,
         NULL,
-        NULL,
+        0,
         '2024-01-26 15:00:00',
         NULL
     ),
@@ -976,7 +976,7 @@ VALUES
         NULL,
         27,
         NULL,
-        NULL,
+        0,
         '2024-01-18 11:45:00',
         NULL
     ),
@@ -1006,7 +1006,7 @@ VALUES
         NULL,
         34,
         NULL,
-        NULL,
+        0,
         '2024-01-27 08:30:00',
         NULL
     );

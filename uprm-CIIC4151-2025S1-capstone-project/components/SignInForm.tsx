@@ -50,8 +50,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       // Handle successful user creation
       if (response && response.id) {
         // Save credentials
-        await saveCredentials(response.user.id, email, password, response.user.admin, response.user.suspended);
-
+        await saveCredentials(response.id, email, password, response.admin, response.suspended);
         Alert.alert("Success", "Account created successfully!");
         onSuccess();
       } else {
