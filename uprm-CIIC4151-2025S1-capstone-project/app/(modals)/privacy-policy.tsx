@@ -7,14 +7,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function PrivacyPolicyModal() {
   const { colors } = useAppColors();
 
-  const handleContactPrivacy = () => {
-    Linking.openURL(
-      "mailto:privacy@communityreports.com?subject=Privacy Policy Inquiry"
-    );
-  };
-
   const handleViewFullPolicy = () => {
-    Linking.openURL("https://www.communityreports.com/privacy-policy");
+    Linking.openURL(
+      "https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project"
+    );
   };
 
   const styles = createStyles(colors);
@@ -78,15 +74,6 @@ export default function PrivacyPolicyModal() {
               textColor={colors.primary}
             >
               View Full Policy
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={handleContactPrivacy}
-              style={styles.actionButton}
-              icon="email"
-              textColor={colors.primary}
-            >
-              Contact Privacy Team
             </Button>
           </View>
         </ScrollView>

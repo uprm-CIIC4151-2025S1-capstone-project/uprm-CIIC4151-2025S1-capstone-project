@@ -140,12 +140,12 @@ export default function UpdateProfileModal() {
         return;
       }
 
-      const res = await upgradeToAdmin(
+      const response = await upgradeToAdmin(
         credentials.userId,
         formData.adminCode.trim()
       );
 
-      if (res?.success) {
+      if (response?.success) {
         await saveCredentials(
           credentials.userId,
           credentials.email,
@@ -156,14 +156,14 @@ export default function UpdateProfileModal() {
 
         Alert.alert(
           "Success",
-          res.department
-            ? `You have been upgraded to admin in ${res.department}.`
+          response.department
+            ? `You have been upgraded to admin in ${response.department}.`
             : "You have been upgraded to admin."
         );
         // Reset the code box
         setFormData((prev) => ({ ...prev, adminCode: "" }));
       } else {
-        Alert.alert("Invalid Code", res?.error_msg || "Code not recognized.");
+        Alert.alert("Invalid Code", response?.error_msg || "Code not recognized.");
       }
     } catch (err: any) {
       console.error("Upgrade admin error:", err);

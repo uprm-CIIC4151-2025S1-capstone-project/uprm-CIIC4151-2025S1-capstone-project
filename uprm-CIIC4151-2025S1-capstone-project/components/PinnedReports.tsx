@@ -7,7 +7,7 @@ import { Button, Card, Text } from "react-native-paper";
 interface PinnedReportsCardProps {
   pinnedReports: ReportData[];
   error: string;
-  onViewAll: () => void;
+  // onViewAll: () => void;
   onRetry: () => void;
   onReportPress: (reportId: number) => void;
 }
@@ -15,7 +15,7 @@ interface PinnedReportsCardProps {
 export default function PinnedReportsCard({
   pinnedReports,
   error,
-  onViewAll,
+  // onViewAll,
   onRetry,
   onReportPress,
 }: PinnedReportsCardProps) {
@@ -29,7 +29,7 @@ export default function PinnedReportsCard({
           <Text variant="titleMedium" style={styles.sectionTitle}>
             Your Pinned Reports
           </Text>
-          {pinnedReports.length > 0 && (
+          {/* {pinnedReports.length > 0 && (
             <Button
               mode="text"
               compact
@@ -38,7 +38,7 @@ export default function PinnedReportsCard({
             >
               View All
             </Button>
-          )}
+          )} */}
         </View>
 
         {error && !error.includes("log in") ? (
@@ -59,19 +59,19 @@ export default function PinnedReportsCard({
             <Text style={styles.emptySubtext}>
               Pin important reports to see them here
             </Text>
-            <Button
+            {/* <Button
               mode="contained"
               onPress={onViewAll}
               style={styles.exploreButton}
               textColor={colors.button.text}
             >
               Explore Reports
-            </Button>
+            </Button> */}
           </View>
         ) : (
           <>
             {console.log("Pinned reports data:", pinnedReports)}
-            {pinnedReports.slice(0, 5).map((report) => (
+            {pinnedReports.map((report) => (
               <ReportCard
                 key={report.id}
                 report={{
@@ -81,7 +81,7 @@ export default function PinnedReportsCard({
                 onPress={() => onReportPress(report.id)}
               />
             ))}
-            {pinnedReports.length > 5 && (
+            {/* {pinnedReports.length > 5 && (
               <Button
                 mode="text"
                 onPress={onViewAll}
@@ -90,7 +90,7 @@ export default function PinnedReportsCard({
               >
                 View {pinnedReports.length - 5} more pinned reports
               </Button>
-            )}
+            )} */}
           </>
         )}
       </Card.Content>

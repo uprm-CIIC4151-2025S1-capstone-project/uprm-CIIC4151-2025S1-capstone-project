@@ -30,16 +30,20 @@ export default function ReportViewModal() {
   const { id } = useLocalSearchParams();
   const { colors } = useAppColors();
   const { user: currentUser } = useAuth();
+
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [imageError, setImageError] = useState(false);
+
   const [isPinned, setIsPinned] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
+
+  const [isRated, setIsRated] = useState(false); // user-specific
   const [isRating, setIsRating] = useState(false);
-  const [isRated, setIsRated] = useState(false);
-  const [ratingCount, setRatingCount] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0); // total likes
+
   const [snackbar, setSnackbar] = useState({ visible: false, message: "" });
 
   const loadReport = async () => {
@@ -47,28 +51,23 @@ export default function ReportViewModal() {
       setLoading(true);
       setError("");
       setImageError(false);
+
       const data = await getReport(Number(id));
       setReport(data);
+      setRatingCount(data.rating ?? 0); // total likes from backend
 
-      // Check if report is pinned and rated by current user
       if (currentUser) {
         try {
           const [pinnedStatus, ratedStatus] = await Promise.all([
             checkReportPinned(Number(id)),
-            checkReportRated(Number(id)),
+            checkReportRated(Number(id)), // user-specific info
           ]);
           console.log("[loadReport] checkReportPinned =>", pinnedStatus);
           setIsPinned(pinnedStatus.pinned);
           setIsRated(ratedStatus.rated);
-          setRatingCount(ratedStatus.rating);
         } catch (err) {
           console.error("Error checking report status:", err);
-          if (data.rating !== undefined) {
-            setRatingCount(data.rating);
-          }
         }
-      } else if (data.rating !== undefined) {
-        setRatingCount(data.rating);
       }
     } catch (err: any) {
       setError(err.message || "Failed to load report.");
@@ -89,7 +88,6 @@ export default function ReportViewModal() {
     await loadReport();
   };
 
-  // Action handlers
   const handleEdit = () => {
     if (!report) return;
     router.push({
@@ -99,9 +97,13 @@ export default function ReportViewModal() {
   };
 
   const handlePin = async (pinned: boolean) => {
-    console.log("[handlePin] pinned param =", pinned, "current isPinned =", isPinned);
+    console.log(
+      "[handlePin] pinned param =",
+      pinned,
+      "current isPinned =",
+      isPinned
+    );
     if (!report || !currentUser) return;
-
     try {
       setIsPinning(true);
       await togglePinReport(report.id, pinned);
@@ -118,14 +120,22 @@ export default function ReportViewModal() {
   const handleRating = async () => {
     if (!report || !currentUser) return;
 
+    // Optimistic UI update
+    const newRated = !isRated;
+    setIsRated(newRated);
+    setRatingCount((prev) => prev + (newRated ? 1 : -1));
+
     try {
       setIsRating(true);
-      const result = await toggleRating(report.id);
+      const result = await toggleRating(report.id); // server toggles rating
       setIsRated(result.rated);
-      setRatingCount(result.rating);
+      setRatingCount(result.rating); // ensure correct total from backend
       showSnackbar(result.rated ? "Rating added" : "Rating removed");
     } catch (err: any) {
       console.error("Error toggling rating:", err);
+      // rollback if failed
+      setIsRated(!newRated);
+      setRatingCount((prev) => prev + (newRated ? -1 : 1));
       showSnackbar(err.message || "Failed to update rating");
     } finally {
       setIsRating(false);
@@ -134,7 +144,6 @@ export default function ReportViewModal() {
 
   const handleStatusChange = async (status: ReportStatus) => {
     if (!report || !currentUser?.isAdmin) return;
-
     try {
       await changeReportStatus(report.id, status, currentUser.id);
       setReport({ ...report, status });
@@ -145,17 +154,11 @@ export default function ReportViewModal() {
     }
   };
 
-  const showSnackbar = (message: string) => {
+  const showSnackbar = (message: string) =>
     setSnackbar({ visible: true, message });
-  };
-
-  const hideSnackbar = () => {
-    setSnackbar({ visible: false, message: "" });
-  };
+  const hideSnackbar = () => setSnackbar({ visible: false, message: "" });
 
   const styles = createStyles(colors);
-
-  // finalImageUri: build full URL when report has image
   const rawImageUrl = report?.image_url ?? "";
   const finalImageUri = rawImageUrl ? buildImageUrl(rawImageUrl) : undefined;
 
@@ -193,18 +196,11 @@ export default function ReportViewModal() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Button
-          mode="text"
-          onPress={() => router.back()}
-          icon="arrow-left"
-          textColor={colors.text}
-          compact
-        >
+      {/* <View style={styles.header}>
+        <Button mode="text" onPress={() => router.back()} icon="arrow-left" textColor={colors.text} compact>
           Back
         </Button>
-      </View>
+      </View> */}
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -222,7 +218,6 @@ export default function ReportViewModal() {
           <ErrorState />
         ) : report ? (
           <View style={styles.reportContent}>
-            {/* ✅ FULL, CENTERED, NON-CROPPED IMAGE */}
             {finalImageUri && !imageError && (
               <View style={styles.imageWrap}>
                 <View style={styles.imageContainer}>
@@ -236,7 +231,6 @@ export default function ReportViewModal() {
               </View>
             )}
 
-            {/* Action Bar */}
             <ReportActionBar
               report={report}
               onEdit={handleEdit}
@@ -248,9 +242,9 @@ export default function ReportViewModal() {
               isRating={isRating}
               isRated={isRated}
               ratingCount={ratingCount}
+              showBack={false}
             />
 
-            {/* Report Details Component */}
             <ReportDetails report={report} ratingCount={ratingCount} />
           </View>
         ) : (
@@ -268,15 +262,11 @@ export default function ReportViewModal() {
         )}
       </ScrollView>
 
-      {/* Snackbar for feedback */}
       <Snackbar
         visible={snackbar.visible}
         onDismiss={hideSnackbar}
         duration={3000}
-        action={{
-          label: "OK",
-          onPress: hideSnackbar,
-        }}
+        action={{ label: "OK", onPress: hideSnackbar }}
       >
         {snackbar.message}
       </Snackbar>
@@ -286,10 +276,7 @@ export default function ReportViewModal() {
 
 const createStyles = (colors: any) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
+    container: { flex: 1, backgroundColor: colors.background },
     header: {
       flexDirection: "row",
       alignItems: "center",
@@ -298,51 +285,24 @@ const createStyles = (colors: any) =>
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
-    scrollContent: {
-      flexGrow: 1,
-      padding: 16,
-      gap: 16,
-    },
+    scrollContent: { flexGrow: 1, padding: 16, gap: 16 },
     loadingText: {
       marginTop: 16,
       textAlign: "center",
       color: colors.textSecondary,
     },
-    imageWrap: {
-      alignItems: "center",
-      marginBottom: 12,
-    },
-    imageContainer: {
-      borderRadius: 8,
-      overflow: "hidden",
-      width: "100%",
-    },
-    image: {
-      width: "100%",
-      height: 200,
-    },
-    reportContent: {
-      width: "100%",
-    },
-    errorContainer: {
-      alignItems: "center",
-      paddingVertical: 32,
-    },
-    errorIcon: {
-      fontSize: 48,
-      marginBottom: 16,
-    },
+    imageWrap: { alignItems: "center", marginBottom: 12 },
+    imageContainer: { borderRadius: 8, overflow: "hidden", width: "100%" },
+    image: { width: "100%", height: 200 },
+    reportContent: { width: "100%" },
+    errorContainer: { alignItems: "center", paddingVertical: 32 },
+    errorIcon: { fontSize: 48, marginBottom: 16 },
     errorText: {
       color: colors.error,
       textAlign: "center",
       marginBottom: 16,
       fontSize: 16,
     },
-    retryButton: {
-      marginBottom: 12,
-      minWidth: 120,
-    },
-    backButton: {
-      minWidth: 120,
-    },
+    retryButton: { marginBottom: 12, minWidth: 120 },
+    backButton: { minWidth: 120 },
   });
