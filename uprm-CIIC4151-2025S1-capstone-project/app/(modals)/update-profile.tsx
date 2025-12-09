@@ -11,7 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function UpdateProfileModal() {
   const router = useRouter();
   const { colors } = useAppColors();
-  const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -24,29 +25,23 @@ export default function UpdateProfileModal() {
     confirmPassword: "",
   });
 
-  const validateForm = () => {
+  const validatePasswordForm = () => {
     const newErrors = {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     };
 
-    // Password change validation
-    if (
-      formData.newPassword ||
-      formData.confirmPassword ||
-      formData.currentPassword
-    ) {
-      if (!formData.currentPassword) {
-        newErrors.currentPassword =
-          "Current password is required to change password";
-      }
-      if (formData.newPassword && formData.newPassword.length < 8) {
-        newErrors.newPassword = "New password must be at least 8 characters";
-      }
-      if (formData.newPassword !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
-      }
+    if (!formData.currentPassword) {
+      newErrors.currentPassword = "Current password is required";
+    }
+    if (!formData.newPassword) {
+      newErrors.newPassword = "New password is required";
+    } else if (formData.newPassword.length < 8) {
+      newErrors.newPassword = "New password must be at least 8 characters";
+    }
+    if (formData.newPassword !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
@@ -54,21 +49,21 @@ export default function UpdateProfileModal() {
   };
 
   const handleUpdatePassword = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    // If no password fields are filled, return early
+    // Check if all password fields are empty
     if (
+      !formData.currentPassword &&
       !formData.newPassword &&
-      !formData.confirmPassword &&
-      !formData.currentPassword
+      !formData.confirmPassword
     ) {
       Alert.alert("No Changes", "Please enter your current and new password.");
       return;
     }
 
-    setLoading(true);
+    if (!validatePasswordForm()) {
+      return;
+    }
+
+    setPasswordLoading(true);
     try {
       const credentials = await getStoredCredentials();
       if (!credentials) {
@@ -77,26 +72,28 @@ export default function UpdateProfileModal() {
         return;
       }
 
-      const updateData: any = {};
-
-      if (formData.newPassword && formData.currentPassword) {
-        updateData.current_password = formData.currentPassword;
-        updateData.new_password = formData.newPassword;
+      // Verify current password
+      if (formData.currentPassword !== credentials.password) {
+        Alert.alert("Error", "Current password is incorrect");
+        setPasswordLoading(false);
+        return;
       }
+
+      const updateData = {
+        password: formData.newPassword,
+      };
 
       const response = await updateUser(credentials.userId, updateData);
 
-      if (response.success) {
-        // Update stored credentials if password was changed
-        if (updateData.new_password) {
-          await saveCredentials(
-            credentials.userId,
-            credentials.email,
-            formData.newPassword,
-            credentials.admin,
-            credentials.suspended
-          );
-        }
+      if (response && !response.error_msg) {
+        // Update stored credentials with new password
+        await saveCredentials(
+          credentials.userId,
+          credentials.email,
+          formData.newPassword, // Store the new password
+          credentials.admin,
+          credentials.suspended
+        );
 
         Alert.alert("Success", "Password updated successfully!", [
           {
@@ -113,7 +110,10 @@ export default function UpdateProfileModal() {
           },
         ]);
       } else {
-        Alert.alert("Error", response.error_msg || "Failed to update password");
+        Alert.alert(
+          "Error",
+          response?.error_msg || "Failed to update password"
+        );
       }
     } catch (error: any) {
       console.error("Password update error:", error);
@@ -122,7 +122,7 @@ export default function UpdateProfileModal() {
         error.message || "Failed to update password. Please try again."
       );
     } finally {
-      setLoading(false);
+      setPasswordLoading(false);
     }
   };
 
@@ -133,7 +133,7 @@ export default function UpdateProfileModal() {
         return;
       }
 
-      setLoading(true);
+      setAdminLoading(true);
       const credentials = await getStoredCredentials();
       if (!credentials) {
         Alert.alert("Error", "You must be logged in to use an admin code.");
@@ -146,11 +146,12 @@ export default function UpdateProfileModal() {
       );
 
       if (response?.success) {
+        // Update stored credentials with new admin status
         await saveCredentials(
           credentials.userId,
           credentials.email,
           credentials.password,
-          true,
+          true, // Set admin to true
           credentials.suspended
         );
 
@@ -163,13 +164,16 @@ export default function UpdateProfileModal() {
         // Reset the code box
         setFormData((prev) => ({ ...prev, adminCode: "" }));
       } else {
-        Alert.alert("Invalid Code", response?.error_msg || "Code not recognized.");
+        Alert.alert(
+          "Invalid Code",
+          response?.error_msg || "Code not recognized."
+        );
       }
     } catch (err: any) {
       console.error("Upgrade admin error:", err);
       Alert.alert("Error", err.message || "Failed to verify admin code.");
     } finally {
-      setLoading(false);
+      setAdminLoading(false);
     }
   };
 
@@ -204,7 +208,7 @@ export default function UpdateProfileModal() {
             </Text>
             <Text variant="bodyMedium" style={styles.sectionText}>
               Update your password to keep your account secure. Your new
-              password should be strong and unique.
+              password should be at least 8 characters.
             </Text>
 
             <TextInput
@@ -215,7 +219,7 @@ export default function UpdateProfileModal() {
               }
               mode="outlined"
               secureTextEntry
-              disabled={loading}
+              disabled={passwordLoading}
               style={styles.input}
               error={!!errors.currentPassword}
               outlineColor={colors.input.border}
@@ -232,7 +236,7 @@ export default function UpdateProfileModal() {
               onChangeText={(value) => handleInputChange("newPassword", value)}
               mode="outlined"
               secureTextEntry
-              disabled={loading}
+              disabled={passwordLoading}
               style={styles.input}
               error={!!errors.newPassword}
               outlineColor={colors.input.border}
@@ -251,7 +255,7 @@ export default function UpdateProfileModal() {
               }
               mode="outlined"
               secureTextEntry
-              disabled={loading}
+              disabled={passwordLoading}
               style={styles.input}
               error={!!errors.confirmPassword}
               outlineColor={colors.input.border}
@@ -266,15 +270,16 @@ export default function UpdateProfileModal() {
               mode="contained"
               style={styles.actionButton}
               disabled={
-                loading ||
-                (!formData.newPassword &&
-                  !formData.currentPassword &&
-                  !formData.confirmPassword)
+                passwordLoading ||
+                !formData.currentPassword ||
+                !formData.newPassword ||
+                !formData.confirmPassword
               }
               onPress={handleUpdatePassword}
+              loading={passwordLoading}
               textColor={colors.button.text}
             >
-              {loading ? "Updating..." : "Update Password"}
+              Update Password
             </Button>
           </View>
 
@@ -298,7 +303,7 @@ export default function UpdateProfileModal() {
               value={formData.adminCode}
               onChangeText={(value) => handleInputChange("adminCode", value)}
               mode="outlined"
-              disabled={loading}
+              disabled={adminLoading}
               style={styles.input}
               autoCapitalize="none"
               placeholder="Enter admin code"
@@ -310,11 +315,12 @@ export default function UpdateProfileModal() {
             <Button
               mode="contained"
               style={styles.actionButton}
-              disabled={loading || !formData.adminCode?.trim()}
+              disabled={adminLoading || !formData.adminCode?.trim()}
               onPress={handleUpgradeToAdmin}
+              loading={adminLoading}
               textColor={colors.button.text}
             >
-              {loading ? "Verifying..." : "Verify & Upgrade"}
+              Verify & Upgrade
             </Button>
           </View>
         </ScrollView>
