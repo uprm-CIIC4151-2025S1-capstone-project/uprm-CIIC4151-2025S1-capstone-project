@@ -2,6 +2,7 @@ from flask import jsonify
 from dao.d_reports import ReportsDAO
 from dao.d_administrators import AdministratorsDAO  # 👈 NEW
 from constants import HTTP_STATUS
+from datetime import datetime
 
 
 class ReportsHandler:
@@ -585,26 +586,23 @@ class ReportsHandler:
                     HTTP_STATUS.BAD_REQUEST,
                 )
 
+            # verify admin
+            admin_dao = AdministratorsDAO()
+            if not admin_dao.get_administrator_by_id(admin_id):
+                return jsonify({"error_msg": "User not authorized as admin"}), HTTP_STATUS.FORBIDDEN
+
             valid_statuses = ["open", "in_progress", "resolved", "denied", "closed"]
             if status not in valid_statuses:
                 return (
-                    jsonify(
-                        {
-                            "error_msg": f"Invalid status. Must be one of: {valid_statuses}"
-                        }
-                    ),
+                    jsonify({"error_msg": f"Invalid status. Must be one of: {valid_statuses}"}),
                     HTTP_STATUS.BAD_REQUEST,
                 )
 
             dao = ReportsDAO()
 
             if not dao.get_report_by_id(report_id):
-                return (
-                    jsonify({"error_msg": "Report not found"}),
-                    HTTP_STATUS.NOT_FOUND,
-                )
+                return jsonify({"error_msg": "Report not found"}), HTTP_STATUS.NOT_FOUND
 
-            # Update report status
             update_data = {"status": status}
             if status == "resolved":
                 update_data["resolved_by"] = admin_id
@@ -614,15 +612,31 @@ class ReportsHandler:
 
             updated_report = dao.update_report(report_id, **update_data)
 
-            if not updated_report:
-                return (
-                    jsonify({"error_msg": "Failed to update report status"}),
-                    HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                )
+            # debug
+            print("DEBUG updated_report:", updated_report)
 
-            return jsonify(self.map_to_dict(updated_report)), HTTP_STATUS.OK
+            if not updated_report:
+                return jsonify({"error_msg": "Failed to update report status"}), HTTP_STATUS.INTERNAL_SERVER_ERROR
+
+            # If DAO returns dict, return it directly
+            if isinstance(updated_report, dict):
+                # optionally convert timestamps to ISO strings if needed
+                if isinstance(updated_report.get("created_at"), (datetime, )):
+                    updated_report["created_at"] = updated_report["created_at"].isoformat()
+                if isinstance(updated_report.get("resolved_at"), (datetime, )):
+                    updated_report["resolved_at"] = updated_report["resolved_at"].isoformat()
+                return jsonify(updated_report), HTTP_STATUS.OK
+
+            # Fallback: existing tuple -> mapping function
+            try:
+                return jsonify(self.map_to_dict(updated_report)), HTTP_STATUS.OK
+            except Exception as e:
+                print("map_to_dict failed:", e)
+                return jsonify({"error_msg": "Invalid updated row format", "detail": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
+
         except Exception as e:
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
+
 
     def get_status_options(self):
         """Get available status options for admin UI"""

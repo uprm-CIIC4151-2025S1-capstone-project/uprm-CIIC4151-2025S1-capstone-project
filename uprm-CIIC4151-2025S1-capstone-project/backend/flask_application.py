@@ -40,7 +40,7 @@ def allowed_file(filename: str) -> bool:
 # -------------------------------------------------------
 # HEALTH
 # -------------------------------------------------------
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET"]) # Ignored
 def health_check():
     return {"status": "OK", "message": "Report System API is running"}
 
@@ -48,7 +48,7 @@ def health_check():
 # -------------------------------------------------------
 # IMAGE UPLOAD (NEW)
 # -------------------------------------------------------
-@app.route("/upload", methods=["POST"])
+@app.route("/upload", methods=["POST"]) # Ignored
 def upload_image():
     """
     Accepts: multipart/form-data with field "image"
@@ -81,7 +81,7 @@ def upload_image():
 
 
 # Serve uploaded files
-@app.route("/uploads/<path:filename>")
+@app.route("/uploads/<path:filename>") # Ignored
 def uploaded_file(filename):
     return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
 
@@ -89,7 +89,7 @@ def uploaded_file(filename):
 # -------------------------------------------------------
 # REPORTS
 # -------------------------------------------------------
-@app.route("/reports", methods=["GET", "POST"])
+@app.route("/reports", methods=["GET", "POST"]) # Done (create report not working)
 def handle_reports():
     handler = ReportsHandler()
     if request.method == "POST":
@@ -104,7 +104,7 @@ def handle_reports():
         return handler.get_all_reports(page, limit, sort, admin_id, location_id, city)
 
 
-@app.route("/reports/<int:report_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/reports/<int:report_id>", methods=["GET", "PUT", "DELETE"]) # Done (for PUT refer to 'change_report_status')
 def handle_report(report_id):
     handler = ReportsHandler()
     if request.method == "GET":
@@ -116,21 +116,21 @@ def handle_report(report_id):
 
 
 
-@app.route("/reports/<int:report_id>/validate", methods=["POST"])
+@app.route("/reports/<int:report_id>/validate", methods=["POST"]) # Ignored
 def validate_report(report_id):
     handler = ReportsHandler()
     return handler.validate_report(report_id, request.json)
 
 
 
-@app.route("/reports/<int:report_id>/resolve", methods=["POST"])
+@app.route("/reports/<int:report_id>/resolve", methods=["POST"]) # Ignored?
 def resolve_report(report_id):
     handler = ReportsHandler()
     return handler.resolve_report(report_id, request.json)
 
 
 
-@app.route("/reports/<int:report_id>/rate", methods=["POST"])
+@app.route("/reports/<int:report_id>/rate", methods=["POST"]) # Ignored (refer to 'toggle_rate_report')
 def rate_report(report_id):
     handler = ReportsHandler()
     return handler.rate_report(report_id, request.json)
@@ -139,26 +139,26 @@ def rate_report(report_id):
 # -------------------------------------------------------
 # REPORTS - RATING & STATUS ENHANCEMENTS
 # -------------------------------------------------------
-@app.route("/reports/<int:report_id>/rating-status", methods=["GET"])
+@app.route("/reports/<int:report_id>/rating-status", methods=["GET"]) # Ignored
 def get_report_rating_status(report_id):
     handler = ReportsHandler()
     user_id = request.args.get("user_id", type=int)
     return handler.get_report_rating_status(report_id, user_id)
 
 
-@app.route("/reports/<int:report_id>/rating", methods=["GET"])
+@app.route("/reports/<int:report_id>/rating", methods=["GET"]) # Done
 def get_report_rating(report_id):
     handler = ReportsHandler()
     return handler.get_report_rating(report_id)
 
 
-@app.route("/reports/<int:report_id>/status", methods=["PUT"])
+@app.route("/reports/<int:report_id>/status", methods=["PUT"]) # Done
 def change_report_status(report_id):
     handler = ReportsHandler()
     return handler.change_report_status(report_id, request.json)
 
 
-@app.route("/reports/status-options", methods=["GET"])
+@app.route("/reports/status-options", methods=["GET"]) # Ignored
 def get_status_options():
     handler = ReportsHandler()
     return handler.get_status_options()
@@ -168,7 +168,7 @@ def get_status_options():
 # -------------------------------------------------------
 # USERS
 # -------------------------------------------------------
-@app.route("/users", methods=["GET", "POST"])
+@app.route("/users", methods=["GET", "POST"]) # Done
 def handle_users():
     handler = UsersHandler()
     if request.method == "POST":
@@ -180,7 +180,7 @@ def handle_users():
 
 
 
-@app.route("/users/<int:user_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/users/<int:user_id>", methods=["GET", "PUT", "DELETE"]) # Done (for PUT refer to upgrade_admin)
 def handle_user(user_id):
     handler = UsersHandler()
     if request.method == "GET":
@@ -194,31 +194,31 @@ def handle_user(user_id):
 # -------------------------------------------------------
 # USERS - MANAGEMENT ACTIONS
 # -------------------------------------------------------
-@app.route("/users/<int:user_id>/suspend", methods=["POST"])
+@app.route("/users/<int:user_id>/suspend", methods=["POST"]) # Ignore
 def suspend_user(user_id):
     handler = UsersHandler()
     return handler.suspend_user(user_id)
 
 
-@app.route("/users/<int:user_id>/unsuspend", methods=["POST"])
+@app.route("/users/<int:user_id>/unsuspend", methods=["POST"]) # Ignore
 def unsuspend_user(user_id):
     handler = UsersHandler()
     return handler.unsuspend_user(user_id)
 
 
-@app.route("/users/<int:user_id>/pin", methods=["POST"])
+@app.route("/users/<int:user_id>/pin", methods=["POST"]) # Ignore
 def pin_user(user_id):
     handler = UsersHandler()
     return handler.pin_user(user_id)
 
 
-@app.route("/users/<int:user_id>/unpin", methods=["POST"])
+@app.route("/users/<int:user_id>/unpin", methods=["POST"]) # Ignore
 def unpin_user(user_id):
     handler = UsersHandler()
     return handler.unpin_user(user_id)
 
 
-@app.route("/users/<int:user_id>/upgrade-admin", methods=["POST"])
+@app.route("/users/<int:user_id>/upgrade-admin", methods=["POST"]) # Done
 def upgrade_admin(user_id):
     handler = UsersHandler()
     return handler.upgrade_to_admin(user_id, request.json)
@@ -228,14 +228,14 @@ def upgrade_admin(user_id):
 # -------------------------------------------------------
 # AUTH
 # -------------------------------------------------------
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["POST"]) # Done
 def login():
     handler = UsersHandler()
     return handler.login(request.json)
 
 
 
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["POST"]) # Done
 def logout():
     handler = UsersHandler()
     return handler.logout()
@@ -245,7 +245,7 @@ def logout():
 # -------------------------------------------------------
 # LOCATIONS
 # -------------------------------------------------------
-@app.route("/locations", methods=["GET", "POST"])
+@app.route("/locations", methods=["GET", "POST"]) # Ignore
 def handle_locations():
     handler = LocationsHandler()
     if request.method == "POST":
@@ -257,7 +257,7 @@ def handle_locations():
 
 
 
-@app.route("/locations/<int:location_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/locations/<int:location_id>", methods=["GET", "PUT", "DELETE"]) # Ignore
 def handle_location(location_id):
     handler = LocationsHandler()
     if request.method == "GET":
@@ -268,21 +268,21 @@ def handle_location(location_id):
         return handler.delete_location(location_id)
 
 
-@app.route("/locations/<int:location_id>/details", methods=["GET"])
+@app.route("/locations/<int:location_id>/details", methods=["GET"]) # Ignore
 def get_location_details(location_id):
     handler = LocationsHandler()
     return handler.get_location_details(location_id)
 
 
 
-@app.route("/locations/nearby", methods=["GET"])
+@app.route("/locations/nearby", methods=["GET"]) # Ignore
 def get_locations_nearby():
     handler = LocationsHandler()
     return handler.get_locations_nearby()
 
 
 
-@app.route("/locations/with-reports", methods=["GET"])
+@app.route("/locations/with-reports", methods=["GET"]) # Done
 def get_locations_with_reports():
     handler = LocationsHandler()
     page = request.args.get("page", default=1, type=int)
@@ -291,14 +291,14 @@ def get_locations_with_reports():
 
 
 
-@app.route("/locations/stats", methods=["GET"])
+@app.route("/locations/stats", methods=["GET"]) # Ignore
 def get_location_stats():
     handler = LocationsHandler()
     return handler.get_location_stats()
 
 
 
-@app.route("/locations/search", methods=["GET"])
+@app.route("/locations/search", methods=["GET"]) # Ignore
 def search_locations():
     handler = LocationsHandler()
     return handler.search_locations()
@@ -308,7 +308,7 @@ def search_locations():
 # -------------------------------------------------------
 # ADMINISTRATORS
 # -------------------------------------------------------
-@app.route("/administrators", methods=["GET", "POST"])
+@app.route("/administrators", methods=["GET", "POST"]) # Done (Ignore POST since admins are created when upgrading users)
 def handle_administrators():
     handler = AdministratorsHandler()
     if request.method == "POST":
@@ -320,7 +320,7 @@ def handle_administrators():
 
 
 
-@app.route("/administrators/<int:admin_id>", methods=["GET", "PUT", "DELETE"])
+@app.route("/administrators/<int:admin_id>", methods=["GET", "PUT", "DELETE"]) # Done (Ignore PUT and DELETE)
 def handle_administrator(admin_id):
     handler = AdministratorsHandler()
     if request.method == "GET":
@@ -332,49 +332,49 @@ def handle_administrator(admin_id):
 
 
 
-@app.route("/administrators/department/<string:department>", methods=["GET"])
+@app.route("/administrators/department/<string:department>", methods=["GET"]) # Done
 def get_administrators_by_department(department):
     handler = AdministratorsHandler()
     return handler.get_administrators_by_department(department)
 
 
 
-@app.route("/administrators/<int:admin_id>/details", methods=["GET"])
+@app.route("/administrators/<int:admin_id>/details", methods=["GET"]) # Ignore
 def get_administrator_with_details(admin_id):
     handler = AdministratorsHandler()
     return handler.get_administrator_with_details(admin_id)
 
 
 
-@app.route("/administrators/available", methods=["GET"])
+@app.route("/administrators/available", methods=["GET"]) # Ignore
 def get_available_administrators():
     handler = AdministratorsHandler()
     return handler.get_available_administrators()
 
 
 
-@app.route("/administrators/stats/all", methods=["GET"])
+@app.route("/administrators/stats/all", methods=["GET"]) # Ignore
 def get_all_admin_stats():
     handler = AdministratorsHandler()
     return handler.get_all_admin_stats()
 
 
 
-@app.route("/administrators/check/<int:user_id>", methods=["GET"])
+@app.route("/administrators/check/<int:user_id>", methods=["GET"]) # Ignore
 def check_user_is_administrator(user_id):
     handler = AdministratorsHandler()
     return handler.check_user_is_administrator(user_id)
 
 
 
-@app.route("/administrators/performance", methods=["GET"])
+@app.route("/administrators/performance", methods=["GET"]) # Ignore
 def get_administrator_performance_report():
     handler = AdministratorsHandler()
     return handler.get_administrator_performance_report()
 
 
 # NEW: /me/admin
-@app.route("/me/admin", methods=["GET"])
+@app.route("/me/admin", methods=["GET"]) # Ignore
 def get_current_user_admin_info():
     user_id = request.args.get("user_id", type=int)
 
@@ -407,7 +407,7 @@ def get_current_user_admin_info():
 # -------------------------------------------------------
 # PINNED REPORTS
 # -------------------------------------------------------
-@app.route("/pinned-reports", methods=["GET", "POST"])
+@app.route("/pinned-reports", methods=["GET", "POST"]) # Ignore
 def handle_pinned_reports():
     handler = PinnedReportsHandler()
     if request.method == "POST":
@@ -420,7 +420,7 @@ def handle_pinned_reports():
 
 
 
-@app.route("/pinned-reports/<int:report_id>", methods=["DELETE"])
+@app.route("/pinned-reports/<int:report_id>", methods=["DELETE"]) # Ignore
 def handle_pinned_report(report_id):
     handler = PinnedReportsHandler()
     user_id = request.args.get("user_id", type=int)
@@ -429,7 +429,7 @@ def handle_pinned_report(report_id):
 
 
 
-@app.route("/users/<int:user_id>/pinned-reports", methods=["GET"])
+@app.route("/users/<int:user_id>/pinned-reports", methods=["GET"]) # Done
 def handle_user_pinned_reports(user_id):
     handler = PinnedReportsHandler()
     page = request.args.get("page", default=1, type=int)
@@ -438,13 +438,13 @@ def handle_user_pinned_reports(user_id):
 
 
 
-@app.route("/pinned-reports/check/<int:user_id>/<int:report_id>", methods=["GET"])
+@app.route("/pinned-reports/check/<int:user_id>/<int:report_id>", methods=["GET"]) # Ignore
 def check_pinned_status(user_id, report_id):
     handler = PinnedReportsHandler()
     return handler.check_pinned_status(user_id, report_id)
 
 
-@app.route("/reports/<int:report_id>/pinned-status", methods=["GET"])
+@app.route("/reports/<int:report_id>/pinned-status", methods=["GET"]) # Ignore
 def get_report_pinned_status(report_id):
     handler = PinnedReportsHandler()
     user_id = request.args.get("user_id", type=int)
@@ -452,7 +452,7 @@ def get_report_pinned_status(report_id):
 
 
 
-@app.route("/pinned-reports/<int:user_id>/<int:report_id>/details", methods=["GET"])
+@app.route("/pinned-reports/<int:user_id>/<int:report_id>/details", methods=["GET"]) # Ignore
 def get_pinned_report_detail(user_id, report_id):
     handler = PinnedReportsHandler()
     return handler.get_pinned_report_detail(user_id, report_id)
@@ -462,7 +462,7 @@ def get_pinned_report_detail(user_id, report_id):
 # -------------------------------------------------------
 # SEARCH & FILTER
 # -------------------------------------------------------
-@app.route("/reports/search", methods=["GET"])
+@app.route("/reports/search", methods=["GET"]) # Ignore
 def search_reports():
     handler = ReportsHandler()
     query = request.args.get("q", "")
@@ -477,7 +477,7 @@ def search_reports():
     return handler.search_reports(query, page, limit, status, category, sort, admin_id, location_id, city)
 
 
-@app.route("/reports/filter", methods=["GET"])
+@app.route("/reports/filter", methods=["GET"]) # Ignore
 def filter_reports():
     handler = ReportsHandler()
     status = request.args.get("status")
@@ -492,7 +492,7 @@ def filter_reports():
 
 
 
-@app.route("/reports/user/<int:user_id>", methods=["GET"])
+@app.route("/reports/user/<int:user_id>", methods=["GET"]) # Ignore
 def get_user_reports(user_id):
     handler = ReportsHandler()
     page = request.args.get("page", default=1, type=int)
@@ -504,42 +504,42 @@ def get_user_reports(user_id):
 # -------------------------------------------------------
 # STATS & ADMIN
 # -------------------------------------------------------
-@app.route("/stats/overview", methods=["GET"])
+@app.route("/stats/overview", methods=["GET"]) # Ignore
 def get_overview_stats():
     handler = ReportsHandler()
     return handler.get_overview_stats()
 
 
 
-@app.route("/stats/department/<string:department>", methods=["GET"])
+@app.route("/stats/department/<string:department>", methods=["GET"]) # Ignore
 def get_department_overview_stats(department):
     handler = ReportsHandler()
     return handler.get_department_stats(department)
 
 
 
-@app.route("/stats/user/<int:user_id>", methods=["GET"])
+@app.route("/stats/user/<int:user_id>", methods=["GET"]) # Done
 def get_user_stats(user_id):
     handler = UsersHandler()
     return handler.get_user_stats(user_id)
 
 
 
-@app.route("/stats/admin/<int:admin_id>", methods=["GET"])
+@app.route("/stats/admin/<int:admin_id>", methods=["GET"]) # Ignore
 def get_admin_stats(admin_id):
     handler = AdministratorsHandler()
     return handler.get_admin_stats(admin_id)
 
 
 
-@app.route("/admin/dashboard", methods=["GET"])
+@app.route("/admin/dashboard", methods=["GET"]) # Ignore
 def get_admin_dashboard():
     handler = ReportsHandler()
     return handler.get_admin_dashboard()
 
 
 
-@app.route("/admin/reports/pending", methods=["GET"])
+@app.route("/admin/reports/pending", methods=["GET"]) # Ignore
 def get_pending_reports():
     handler = ReportsHandler()
     page = request.args.get("page", default=1, type=int)
@@ -548,7 +548,7 @@ def get_pending_reports():
 
 
 
-@app.route("/admin/reports/assigned", methods=["GET"])
+@app.route("/admin/reports/assigned", methods=["GET"]) # Ignore
 def get_assigned_reports():
     handler = ReportsHandler()
     admin_id = request.args.get("admin_id", type=int)
@@ -561,7 +561,7 @@ def get_assigned_reports():
 # -------------------------------------------------------
 # SYSTEM HEALTH
 # -------------------------------------------------------
-@app.route("/system/health", methods=["GET"])
+@app.route("/system/health", methods=["GET"]) # Ignore
 def system_health():
     from datetime import datetime
 
@@ -573,7 +573,7 @@ def system_health():
     }
 
 
-@app.route("/api/admin/<int:admin_id>/reports", methods=["GET"])
+@app.route("/api/admin/<int:admin_id>/reports", methods=["GET"]) # Ignore
 def get_reports_for_admin(admin_id):
     handler = AdministratorsHandler()
     return handler.get_reports_for_admin(admin_id)

@@ -50,8 +50,8 @@ CREATE TABLE administrators (
 CREATE TABLE location (
     id SERIAL PRIMARY KEY,
     city VARCHAR(100),
-    latitude DECIMAL(9, 6) NOT NULL,
-    longitude DECIMAL(9, 6) NOT NULL,
+    latitude DECIMAL(9, 6),
+    longitude DECIMAL(9, 6),
     address TEXT,
     -- city was here but I deleted it
     country VARCHAR(100)

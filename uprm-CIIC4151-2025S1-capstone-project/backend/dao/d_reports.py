@@ -233,6 +233,9 @@ class ReportsDAO:
                 query, (title, description, category, location_id, image_url, created_by)
             )
             new_report = cur.fetchone()
+            if not new_report:
+                raise Exception("Report creation failed, no row returned from INSERT")
+            
             if created_by is not None:
                 cur.execute(
                     "UPDATE users SET total_reports = total_reports + 1 WHERE id = %s",
@@ -240,6 +243,7 @@ class ReportsDAO:
                 )
             self.conn.commit()
             return new_report
+
 
     def update_report(
         self,
@@ -255,7 +259,7 @@ class ReportsDAO:
         location_id: int | None = None,
         image_url: str | None = None,
     ):
-        """Update any fields of a report and return the updated row."""
+        """Update any fields of a report and return the updated row as a dict."""
         fields = []
         params = []
 
@@ -308,6 +312,15 @@ class ReportsDAO:
 
         with self.conn.cursor() as cur:
             cur.execute(query, params)
+
+            # Attempt to fetch the returned row
+            row = cur.fetchone()
+
+            # Debug info (remove or change to logger in production)
+            print("DEBUG update_report rowcount:", cur.rowcount)
+            print("DEBUG update_report returned row:", row)
+
+            # commit after reading
             self.conn.commit()
             return cur.fetchone()
 
