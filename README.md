@@ -2,7 +2,7 @@
 
 [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/) [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/) [![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/) [![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-Mobile/Web app for reporting and viewing community issues in Puerto Rico. Built with React Native (Expo), Flask, PostgreSQL, and Docker.
+Mobile/Web app for reporting and viewing community issues in Puerto Rico. Built with React Native (Expo), Flask, PostgreSQL, and Docker. Hosted on Heroku and Netlify.
 
 ## Overview
 
@@ -10,7 +10,7 @@ Reporte Ciudadano is a mobile/web application for submitting and tracking commun
 
 ## Key features
 
-- Submit reports with a title, description, category, photo, and automatic location.
+- Submit reports with a title, description, category, photo, and location.
 - Browse a public feed where users can search, filter, sort, pin, and rate reports.
 - Track progress through the report statuses: open, in_progress, resolved, and denied.
 - Receive notifications when your report is reviewed or updated.
@@ -29,7 +29,7 @@ Reporte Ciudadano is a mobile/web application for submitting and tracking commun
 1) Clone repository
 
     ```bash
-    git clone https://github.com/Jonathan-Rod/uprm-CIIC4151-2025S1-capstone-project.git
+    git clone https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project.git
     cd uprm-CIIC4151-2025S1-capstone-project
     ```
 
@@ -65,7 +65,7 @@ Reporte Ciudadano is a mobile/web application for submitting and tracking commun
     Notes:
     
     - Ensure API base URL in frontend runtime config points to backend.
-    - Needs backend running `flask_application.py` and modify `utils/api.ts` **needs the BASE URL updated**
+    - For local production, needs backend running `flask_application.py` and modify `utils/api.ts` **needs the BASE URL updated**
     - URL given by flask needs to be here -> **android_url**, **iosUrl**, **webUrl** 
 
    ``` ts
@@ -93,7 +93,7 @@ Reporte Ciudadano is a mobile/web application for submitting and tracking commun
       }
     
       // Para producción
-      return "https://tu-api-real.com/";
+      return "https://reporte-ciudadano-15eb46ea2557.herokuapp.com";
     };
     ```
 
