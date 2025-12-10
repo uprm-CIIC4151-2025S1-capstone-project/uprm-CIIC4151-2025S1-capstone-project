@@ -3,6 +3,7 @@ from dao.d_reports import ReportsDAO
 from dao.d_administrators import AdministratorsDAO
 from constants import HTTP_STATUS
 from datetime import datetime
+import traceback
 
 class ReportsHandler:
     # -----------------------------------
@@ -136,13 +137,20 @@ class ReportsHandler:
 
     def create_report(self, data):
         try:
+            dao = ReportsDAO()
+
+            if not data:
+                return (
+                    jsonify({"error_msg": "Missing request data"}),
+                    HTTP_STATUS.BAD_REQUEST,
+                )
             title = data.get("title")
             description = data.get("description")
             category = data.get("category", "other")
             location_id = data.get("location_id")
-            city = data.get("city") #
+            city = data.get("city")
             image_url = data.get("image_url")
-            created_by = data.get("user_id")
+            created_by = data.get("user_id")  # comes from frontend as user_id
 
             if not title or not description:
                 return (
@@ -174,22 +182,41 @@ class ReportsHandler:
                 return (
                     jsonify(
                         {
-                            "error_msg": f"Invalid category. Must be one of: {valid_categories}"
+                            "error_msg": (
+                                "Invalid category. Must be one of: "
+                                f"{', '.join(valid_categories)}"
+                            )
                         }
                     ),
                     HTTP_STATUS.BAD_REQUEST,
                 )
 
-            dao = ReportsDAO()
+            try:
+                created_by = int(created_by)
+            except (TypeError, ValueError):
+                return (
+                    jsonify({"error_msg": "User ID must be an integer"}),
+                    HTTP_STATUS.BAD_REQUEST,
+                )
+            if location_id is not None:
+                try:
+                    location_id = int(location_id)
+                except (TypeError, ValueError):
+                    return (
+                        jsonify({"error_msg": "Location ID must be an integer"}),
+                        HTTP_STATUS.BAD_REQUEST,
+                    )
+            
             inserted_report = dao.create_report(
                 title=title,
                 description=description,
                 category=category,
                 location_id=location_id,
-                city= city,
+                city=city,
                 image_url=image_url,
                 created_by=created_by,
             )
+
             if not inserted_report:
                 return (
                     jsonify({"error_msg": "Failed to create report"}),
@@ -197,6 +224,8 @@ class ReportsHandler:
                 )
             return jsonify(self.map_to_dict(inserted_report)), HTTP_STATUS.CREATED
         except Exception as e:
+            print("[create_report] ERROR:", e)
+            traceback.print_exc()
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
 
     def update_report(self, report_id, data):
@@ -208,10 +237,12 @@ class ReportsHandler:
                     HTTP_STATUS.BAD_REQUEST,
                 )
             if not dao.get_report_by_id(report_id):
-                return jsonify({"error_msg": "Report not found"}), HTTP_STATUS.NOT_FOUND
+                return (
+                    jsonify({"error_msg": "Report not found"}),
+                    HTTP_STATUS.NOT_FOUND,
+                )
 
             status = data.get("status")
-            rating = data.get("rating")
             title = data.get("title")
             description = data.get("description")
             category = data.get("category")
@@ -220,6 +251,7 @@ class ReportsHandler:
             resolved_at = data.get("resolved_at")
             location_id = data.get("location_id")
             image_url = data.get("image_url")
+            # rating is intentionally ignored here; it's managed elsewhere
 
             if status and status not in [
                 "resolved",
@@ -228,7 +260,11 @@ class ReportsHandler:
                 "open",
                 "closed",
             ]:
-                return jsonify({"error_msg": "Invalid status"}), HTTP_STATUS.BAD_REQUEST
+                return (
+                    jsonify({"error_msg": "Invalid status"}),
+                    HTTP_STATUS.BAD_REQUEST,
+                )
+            
             if category and category not in [
                 "pothole",
                 "street_light",
@@ -248,16 +284,11 @@ class ReportsHandler:
                     jsonify({"error_msg": "Invalid category"}),
                     HTTP_STATUS.BAD_REQUEST,
                 )
-            if rating and (rating < 1 or rating > 5):
-                return (
-                    jsonify({"error_msg": "Rating must be between 1 and 5"}),
-                    HTTP_STATUS.BAD_REQUEST,
-                )
 
-            updated_report = dao.update_report(
+            dao.update_report(
                 report_id=report_id,
                 status=status,
-                rating=rating,
+                rating=None,
                 title=title,
                 description=description,
                 category=category,
@@ -267,14 +298,14 @@ class ReportsHandler:
                 location_id=location_id,
                 image_url=image_url,
             )
-            if not updated_report:
-                return (
-                    jsonify({"error_msg": "Failed to update report"}),
-                    HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                )
-            return jsonify(self.map_to_dict(updated_report)), HTTP_STATUS.OK
+            return (
+                jsonify({"message": "Report updated successfully"}),
+                HTTP_STATUS.OK,
+            )
         except Exception as e:
-            return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
+            print("[update_report] ERROR:", e)
+            traceback.print_exc()
+            return (jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR,)
 
     def delete_report(self, report_id):
         try:
