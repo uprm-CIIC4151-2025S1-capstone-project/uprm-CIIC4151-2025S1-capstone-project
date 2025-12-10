@@ -7,6 +7,16 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * DeleteAccountModal
+ *
+ * A modal screen for permanently deleting an account. This includes
+ * a warning about the deletion of all personal data and reports, as well as
+ * a confirmation box to ensure the user understands the implications of
+ * their actions.
+ *
+ * @returns {jsx.Element} The rendered modal screen.
+ */
 export default function DeleteAccountModal() {
   const router = useRouter();
   const { colors } = useAppColors();

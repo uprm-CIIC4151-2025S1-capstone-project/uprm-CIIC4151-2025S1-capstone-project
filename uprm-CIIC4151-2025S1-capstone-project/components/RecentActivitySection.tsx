@@ -11,6 +11,14 @@ interface RecentActivitySectionProps {
   onReportPress?: (reportId: number) => void;
 }
 
+/**
+ * Component that displays a list of recent reports.
+ * @param {RecentActivitySectionProps} props - props for the component
+ * @param {ReportData[]} props.reports - list of recent reports
+ * @param {boolean} props.expanded - whether or not the list is expanded
+ * @param {() => void} props.onToggle - callback for toggling the list
+ * @param {number => void} props.onReportPress - callback for when a report is pressed
+ */
 export default function RecentActivitySection({
   reports,
   expanded,

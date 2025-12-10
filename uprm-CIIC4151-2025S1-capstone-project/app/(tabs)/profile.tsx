@@ -22,6 +22,18 @@ import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { Button, ActivityIndicator, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * ProfileScreen displays the user's profile information and stats.
+ * It fetches the user's profile data, recent reports, and stats from the API.
+ * The screen shows a UserCard component with the user's information.
+ * It shows a StatsSwitchCard component to switch between the user's stats and the system's stats.
+ * If the user is an administrator, it shows an AdminStats component with the admin's stats.
+ * It shows a RecentActivitySection component with the user's recent reports.
+ * If the user has no recent reports, it shows a NoActivityState component.
+ * The screen also shows a Button component to view global statistics.
+ * @param {Object} props - props passed to the component
+ * @return {JSX.Element} - the JSX element to be rendered
+ */
 export default function ProfileScreen() {
   const router = useRouter();
   const { colors } = useAppColors();

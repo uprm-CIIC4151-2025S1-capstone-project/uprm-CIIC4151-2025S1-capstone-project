@@ -12,6 +12,12 @@ interface ReportCardProps {
   onPress?: () => void;
 }
 
+/**
+ * A component that displays a report in a card format.
+ *
+ * @param {ReportData & { category: ReportCategory }} report - The report to be displayed.
+ * @param {() => void} onPress - The function to be called when the report card is pressed.
+ */
 export default function ReportCard({ report, onPress }: ReportCardProps) {
   const router = useRouter();
   const { colors } = useAppColors();

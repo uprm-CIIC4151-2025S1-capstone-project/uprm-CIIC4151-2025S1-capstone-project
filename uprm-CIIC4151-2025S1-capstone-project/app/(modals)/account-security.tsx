@@ -6,6 +6,14 @@ import { Alert, ScrollView, StyleSheet, Switch, View } from "react-native";
 import { Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * AccountSecurityModal
+ *
+ * A modal screen for managing account security settings, including
+ * authentication, notification, and security action settings.
+ *
+ * @returns {jsx.Element} The rendered modal screen.
+ */
 export default function AccountSecurityModal() {
   const router = useRouter();
   const { colors } = useAppColors();

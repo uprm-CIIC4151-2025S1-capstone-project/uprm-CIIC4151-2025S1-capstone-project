@@ -7,6 +7,14 @@ interface QuickActionsCardProps {
   onViewMap: () => void;
 }
 
+/**
+ * A component for displaying quick actions for the user to take.
+ *
+ * @param {{QuickActionsCardProps}} props
+ * @param {function} props.onBrowseAll
+ * @param {function} props.onViewMap
+ * @return {JSX.Element} A JSX element for displaying quick actions for the user to take.
+ */
 export default function QuickActionsCard({
   onBrowseAll,
   onViewMap,

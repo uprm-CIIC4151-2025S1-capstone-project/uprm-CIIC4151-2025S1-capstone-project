@@ -15,6 +15,26 @@ export interface UserStatsCardProps {
   closed?: number; // closed_reports (resolved + denied)
 }
 
+/**
+ * A component for displaying user statistics with an optional scoring section.
+ * It expects a UserStatsCardProps object with the following properties:
+ *   - filed: number - Total reports
+ *   - resolved: number - Resolved reports
+ *   - pending: number - Open reports
+ *   - pinned: number - Pinned reports count
+ *   - lastReportDate: string | null - Last report date
+ *   - inProgress?: number - In progress reports (default 0)
+ *   - denied?: number - Denied reports (default 0)
+ *   - closed?: number - Closed reports (resolved + denied) (default 0)
+ *
+ * The scoring section is displayed if showScore is set to true.
+ * The resolution metrics are calculated based on the status distribution.
+ * The scoring section displays the resolution rate, which is the percentage of closed reports out of the total.
+ * The additional footer items are configurable and can be used to display additional information.
+ *
+ * @param {UserStatsCardProps} props - Properties passed to the component
+ * @returns {JSX.Element} - The rendered component
+ */
 export default function UserStatsCard({
   filed,
   resolved,

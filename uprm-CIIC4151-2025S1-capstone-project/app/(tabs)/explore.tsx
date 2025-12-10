@@ -55,6 +55,25 @@ const getDepartmentAllowedCategories = (
   }
 };
 
+/**
+ * ReportScreen is the main entry point for the Explore tab.
+ * It displays a search bar, filter button, and a list of reports.
+ * Users can search for reports by keyword, status, category, city, or sort.
+ * Filtering is done server-side.
+ * Pagination is done server-side for the ALL feed only.
+ * Search results are paginated client-side.
+ * The screen will show a loading indicator while fetching reports.
+ * The screen will show an error message if there's an error while fetching reports.
+ * The screen will show an empty state message if there are no reports available.
+ * The screen will show a retry button if there's an error.
+ * The screen will show a FAB to create a new report.
+ * When a report is pressed, it will navigate to the ReportView screen.
+ * When the create report button is pressed, it will navigate to the ReportForm screen.
+ * The screen will also show a filter sheet modal when the filter button is pressed.
+ * The filter sheet modal will allow users to filter by status, category, sort order, and location.
+ * The filter sheet modal will also allow users to clear all filters.
+ * When the apply button is pressed, it will apply the filters and refresh the list of reports.
+ */
 export default function ReportScreen() {
   const router = useRouter();
   const { colors } = useAppColors();

@@ -9,6 +9,13 @@ interface LoginFormProps {
   onSuccess: () => void;
 }
 
+/**
+ * LoginForm component with email and password inputs.
+ *
+ * Handles login action by calling the backend API.
+ * Saves credentials using the existing function signature.
+ * Displays an error message if the login credentials are invalid.
+ */
 export default function LoginForm({ onSuccess }: LoginFormProps) {
   const { colors } = useAppColors();
   const [email, setEmail] = useState("");

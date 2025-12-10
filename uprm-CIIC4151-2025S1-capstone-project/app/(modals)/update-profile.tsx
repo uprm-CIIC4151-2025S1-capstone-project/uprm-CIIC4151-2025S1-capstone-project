@@ -8,6 +8,14 @@ import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Divider, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * UpdateProfileModal component
+ *
+ * This component renders a modal form for users to update their passwords and
+ * upgrade their accounts to admin status using an admin code.
+ *
+ * @returns {JSX.Element}
+ */
 export default function UpdateProfileModal() {
   const router = useRouter();
   const { colors } = useAppColors();

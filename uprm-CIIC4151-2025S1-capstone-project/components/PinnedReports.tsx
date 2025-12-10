@@ -12,6 +12,17 @@ interface PinnedReportsCardProps {
   onReportPress: (reportId: number) => void;
 }
 
+/**
+ * A component that displays a list of pinned reports, with
+ * options to retry loading, view all pinned reports, and
+ * navigate to a specific report.
+ *
+ * @param pinnedReports - An array of pinned report data.
+ * @param error - An error message to display if there was an issue loading the pinned reports.
+ * @param onRetry - A function to call when the user wants to retry loading the pinned reports.
+ * @param onReportPress - A function to call when the user wants to view a specific report.
+ * @returns A JSX element displaying the pinned reports list.
+ */
 export default function PinnedReportsCard({
   pinnedReports,
   error,

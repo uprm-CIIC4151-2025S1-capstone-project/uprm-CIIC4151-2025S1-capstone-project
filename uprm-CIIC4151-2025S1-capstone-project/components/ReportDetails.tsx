@@ -17,6 +17,11 @@ interface ReportDetailsProps {
   ratingCount: number;
 }
 
+/**
+ * A component that displays report details.
+ * @param {ReportData} report - a report object from the API
+ * @param {number} ratingCount - the number of users who have rated the report
+ */
 export const ReportDetails = ({ report, ratingCount }: ReportDetailsProps) => {
   const { colors } = useAppColors();
   const styles = createStyles(colors);

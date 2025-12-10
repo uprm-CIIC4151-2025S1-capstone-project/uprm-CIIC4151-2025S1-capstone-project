@@ -7,6 +7,12 @@ interface VisitedReportsProps {
   reports: ReportData[];
 }
 
+/**
+ * Displays a list of recently visited reports.
+ *
+ * @param {{ reports: ReportData[] }} props
+ * @returns {JSX.Element} A list of recently visited reports.
+ */
 export default function VisitedReports({ reports }: VisitedReportsProps) {
   const { colors } = useAppColors();
 

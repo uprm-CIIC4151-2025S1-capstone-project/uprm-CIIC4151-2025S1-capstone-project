@@ -3,6 +3,15 @@ import { Text, Card } from "react-native-paper";
 import type { UserCardProps } from "@/types/interfaces";
 import { useAppColors } from "@/hooks/useAppColors";
 
+/**
+ * UserCard component
+ *
+ * Displays a user card with their avatar, username, email, and roles.
+ *
+ * @param {UserCardProps} props - Properties passed to the component
+ * @returns {JSX.Element} - The rendered component
+ */
+
 export default function UserCard({ user }: UserCardProps) {
   const { colors } = useAppColors();
 

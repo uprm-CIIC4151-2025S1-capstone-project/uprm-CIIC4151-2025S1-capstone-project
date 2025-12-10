@@ -25,6 +25,17 @@ import {
 } from "react-native";
 import { ActivityIndicator, Button, Snackbar, Text } from "react-native-paper";
 
+/**
+ * ReportViewModal is a modal that displays a single report
+ * It is used by the Explore tab and the ReportDetails screen
+ * It fetches the report data from the API and displays it using the ReportDetails component
+ * It also renders a ReportActionBar component which allows the user to edit, rate, and change the status of the report
+ *
+ * @param {object} props - The props object
+ * @param {string} props.id - The ID of the report to display
+ *
+ * @returns {React.ReactElement} - The rendered modal
+ */
 export default function ReportViewModal() {
   const router = useRouter();
   const { id } = useLocalSearchParams();

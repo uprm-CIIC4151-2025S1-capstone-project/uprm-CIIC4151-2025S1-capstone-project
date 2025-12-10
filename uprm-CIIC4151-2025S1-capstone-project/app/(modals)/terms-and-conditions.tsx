@@ -4,6 +4,14 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * A modal that displays the app's terms and conditions.
+ *
+ * It provides a brief summary of the key aspects of the terms and conditions
+ * and links to the full terms on the app's website.
+ *
+ * The full terms cover information collection, data usage, and protection practices.
+ */
 export default function TermsAndConditionsModal() {
   const { colors } = useAppColors();
   const styles = createStyles(colors);
