@@ -54,15 +54,17 @@ export default function ReportFormModal() {
       try {
         setLoading(true);
         const data = await getReport(Number(id));
+        console.log("[ReportFormModal] getReport response:", data);
         const mapped: ReportFormData = {
           title: data.title,
           description: data.description,
           category: data.category as ReportCategory,
-          location_id: data.location_id ?? data.location, // adjust to your API
-          image_url: data.image_url || "",
-          occurred_on: data.occurred_on || "",
-          latitude: data.latitude ?? undefined,
-          longitude: data.longitude ?? undefined,
+          location_id: data.location ?? null,
+          city: data.city ?? "",
+          image_url: data.image_url ?? "",
+          occurred_on: data.created_at ?? "",
+          latitude: undefined,
+          longitude: undefined,
         };
 
         setInitialData(mapped);
