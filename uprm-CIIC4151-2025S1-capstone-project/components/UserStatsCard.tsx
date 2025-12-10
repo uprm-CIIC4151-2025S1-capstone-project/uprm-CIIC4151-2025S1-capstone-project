@@ -114,7 +114,7 @@ export default function UserStatsCard({
   return (
     <StatsCard
       title="Your Report Statistics"
-      icon="account-chart"
+      icon="account-group"
       stats={stats}
       showScore={true}
       resolutionMetrics={resolutionMetrics}
