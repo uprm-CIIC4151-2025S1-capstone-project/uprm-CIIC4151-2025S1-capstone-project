@@ -124,7 +124,9 @@ export default function ReportFormModal() {
       }
       Alert.alert(
         "Success",
-        isEdit ? "Report updated successfully!" : "Report submitted successfully!"
+        isEdit
+          ? "Report updated successfully!"
+          : "Report submitted successfully!"
       );
     } catch (error: any) {
       console.error("Report submission error:", error);

@@ -4,7 +4,6 @@ from dao.d_administrators import AdministratorsDAO
 from constants import HTTP_STATUS
 from datetime import datetime
 
-
 class ReportsHandler:
     # -----------------------------------
     # Helpers for admin-based restrictions
@@ -86,7 +85,7 @@ class ReportsHandler:
     # -----------------------------------
     # GET /reports  (with optional admin_id, location filters)
     # -----------------------------------
-    def get_all_reports(self, page=1, limit=10, sort=None, admin_id=None, location_id=None, city=None):
+    def get_all_reports(self, page=1, limit=10, sort=None, admin_id=None, location_id=None, city=None): #
         """
         Added optional location_id and city params. Pass whichever the frontend provides.
         """
@@ -141,6 +140,7 @@ class ReportsHandler:
             description = data.get("description")
             category = data.get("category", "other")
             location_id = data.get("location_id")
+            city = data.get("city") #
             image_url = data.get("image_url")
             created_by = data.get("user_id")
 
@@ -186,6 +186,7 @@ class ReportsHandler:
                 description=description,
                 category=category,
                 location_id=location_id,
+                city= city,
                 image_url=image_url,
                 created_by=created_by,
             )
@@ -302,7 +303,7 @@ class ReportsHandler:
         sort=None,
         admin_id=None,  # 👈 NEW
         location_id=None,
-        city=None,
+        city=None, #
     ):
         """
         Handles:
@@ -364,7 +365,7 @@ class ReportsHandler:
                 sort=order if order in ("asc", "desc") else None,
                 allowed_categories=allowed_categories,  # 👈 pass restriction
                 location_id=location_id,
-                city=city,
+                city=city, #
             )
 
             total_pages = (total_count + limit - 1) // limit
@@ -399,7 +400,7 @@ class ReportsHandler:
             sort=sort,
             admin_id=admin_id,
             location_id=location_id,
-            city=city,
+            city=city, #
         )
 
     def get_reports_by_user(self, user_id, page=1, limit=10):
@@ -545,7 +546,7 @@ class ReportsHandler:
             )
         except Exception as e:
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
-        
+
 
     def get_report_rating(self, report_id):
         """Get overall rating statistics for a report"""
@@ -569,7 +570,7 @@ class ReportsHandler:
             )
         except Exception as e:
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
-        
+
 
     def change_report_status(self, report_id, data):
         """Generic status change for admins"""
@@ -774,7 +775,7 @@ class ReportsHandler:
             return jsonify({"cities": results}), HTTP_STATUS.OK
         except Exception as e:
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
-        
+
     def toggle_rate_report(self, report_id, data):
         """Endpoint called by /reports/<id>/toggle-rate — toggle user's rating."""
         try:
@@ -812,7 +813,7 @@ class ReportsHandler:
             )
         except Exception as e:
             return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
-        
+
     def unrate_report(self, report_id, data):
         """Endpoint called by /reports/<id>/unrate — explicitly remove user's rating."""
         try:

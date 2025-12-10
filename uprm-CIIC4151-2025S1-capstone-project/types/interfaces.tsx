@@ -73,6 +73,7 @@ export interface ReportFormData {
   description: string;
   category: ReportCategory | string;
   location_id?: number;
+  city?: string;
   image_url?: string;
   occurred_on: string;
   latitude?: number;

@@ -23,7 +23,7 @@ interface Location {
   city: string;
 }
 
-export default function ReportForm({ onSubmit, onCancel, onClear, loading = false }: ReportFormProps) {
+export default function ReportForm({ onSubmit, onCancel, onClear, loading = false, initialData, }: ReportFormProps) {
   const { colors } = useAppColors();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -37,12 +37,28 @@ export default function ReportForm({ onSubmit, onCancel, onClear, loading = fals
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+
+  useEffect(() => {
+    if (!initialData) return;
+
+    setTitle(initialData.title ?? "");
+    setDescription(initialData.description ?? "");
+    setCategory((initialData.category as ReportCategory) || ReportCategory.OTHER);
+    setLocationId(initialData.location_id ?? null);
+    setImageUrl(initialData.image_url ?? "");
+    setOccurredOn(
+      initialData.occurred_on
+        ? new Date(initialData.occurred_on)
+        : new Date()
+    );
+  }, [initialData]);
+
   // Load cities from API
   useEffect(() => {
     (async () => {
       try {
-        const res = await getLocations(1, 200); // adjust limit as needed
-        const locArray = Array.isArray(res) ? res : res?.locations || [];
+        const response = await getLocations(1, 100);
+        const locArray = Array.isArray(response) ? response : response?.locations || [];
         setLocations(locArray);
       } catch (err) {
         console.error("Failed to load locations:", err);
@@ -90,6 +106,7 @@ export default function ReportForm({ onSubmit, onCancel, onClear, loading = fals
       description: description.trim(),
       category,
       location_id: locationId || undefined,
+      city: city.trim() || undefined,
       image_url: imageUrl.trim() || undefined,
       occurred_on: occurredOn.toISOString(),
     };
@@ -130,7 +147,7 @@ export default function ReportForm({ onSubmit, onCancel, onClear, loading = fals
       ? locations.filter((loc) => loc.city.toLowerCase().includes(text.toLowerCase()))
       : [];
     setFilteredLocations(filtered);
-    setLocationId(null);
+    setLocationId(null); // Reset location ID when typing
   };
 
   const handleSelectCity = (loc: Location) => {

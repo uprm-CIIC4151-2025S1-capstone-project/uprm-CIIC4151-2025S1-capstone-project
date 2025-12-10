@@ -1,5 +1,4 @@
 -- Drop tables in correct order to handle foreign key dependencies
-
 DROP TABLE IF EXISTS report_ratings;
 
 DROP TABLE IF EXISTS pinned_reports;
@@ -53,7 +52,6 @@ CREATE TABLE location (
     latitude DECIMAL(9, 6),
     longitude DECIMAL(9, 6),
     address TEXT,
-    -- city was here but I deleted it
     country VARCHAR(100)
 );
 
@@ -94,11 +92,9 @@ CREATE TABLE reports (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     resolved_at TIMESTAMP,
     location INTEGER REFERENCES location (id),
+    city VARCHAR(100),
     image_url VARCHAR,
-    rating INTEGER CHECK (
-        rating >= 0
-        AND rating <= 5
-    )
+    rating INTEGER DEFAULT 0
 );
 
 -- Department admins junction table
@@ -126,11 +122,11 @@ CREATE TABLE admin_codes (
 );
 
 CREATE TABLE report_ratings (
-  id SERIAL PRIMARY KEY,
-  report_id INTEGER NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
-  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (report_id, user_id)
+    id SERIAL PRIMARY KEY,
+    report_id INTEGER NOT NULL REFERENCES reports (id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (report_id, user_id)
 );
 
 -- Create indexes for better performance
@@ -541,87 +537,396 @@ VALUES ('DTOP', 1),
     ('DDS', 4);
 
 -- Insert locations around Puerto Rico
-INSERT INTO location (city, latitude, longitude) VALUES
-  ('Adjuntas',        18.163485, -66.723158),
-  ('Aguada',          18.380158, -67.188704),
-  ('Aguadilla',       18.427445, -67.154070),
-  ('Aguas Buenas',    18.256899, -66.102944),
-  ('Aibonito',        18.139959, -66.266002),
-  ('Añasco',          18.285448, -67.140294),
-  ('Arecibo',         18.470514, -66.721847),
-  ('Arroyo',          17.996422, -66.092488),
-  ('Barceloneta',     18.450500, -66.538510),
-  ('Barranquitas',    18.186624, -66.306280),
-  ('Bayamón',         18.389396, -66.165322),
-  ('Cabo Rojo',       18.086627, -67.145735),
-  ('Caguas',          18.238800, -66.035249),
-  ('Camuy',           18.483833, -66.844899),
-  ('Canóvanas',       18.374875, -65.899753),
-  ('Carolina',        18.368088, -66.042473),
-  ('Cataño',          18.446536, -66.135578),
-  ('Cayey',           18.111905, -66.166000),
-  ('Ceiba',           18.247518, -65.908495),
-  ('Ciales',          18.336062, -66.468782),
-  ('Cidra',           18.175791, -66.161278),
-  ('Coamo',           18.079962, -66.357947),
-  ('Comerío',         18.219200, -66.225602),
-  ('Corozal',         18.341060, -66.316840),
-  ('Culebra',         18.310394, -65.303071),
-  ('Dorado',          18.458830, -66.267670),
-  ('Fajardo',         18.325215, -65.653936),
-  ('Florida',         18.362450, -66.561280),
-  ('Guánica',         17.972515, -66.908626),
-  ('Guayama',         17.984133, -66.113777),
-  ('Guayanilla',      18.019131, -66.791842),
-  ('Guaynabo',        18.361295, -66.110296),
-  ('Gurabo',          18.254399, -65.972942),
-  ('Hatillo',         18.428464, -66.787532),
-  ('Hormigueros',     18.133464, -67.112812),
-  ('Humacao',         18.151574, -65.824853),
-  ('Isabela',         18.500780, -67.024350),
-  ('Jayuya',          18.218567, -66.591562),
-  ('Juana Díaz',      18.053437, -66.507508),
-  ('Juncos',          18.227456, -65.920997),
-  ('Lajas',           18.049962, -67.059345),
-  ('Lares',           18.294670, -66.877120),
-  ('Las Marías',      18.251900, -66.992120),
-  ('Las Piedras',     18.185575, -65.873625),
-  ('Loíza',           18.432990, -65.878360),
-  ('Luquillo',        18.372451, -65.716551),
-  ('Manatí',          18.418122, -66.526278),
-  ('Maricao',         18.180790, -66.979900),
-  ('Maunabo',         18.007189, -65.899329),
-  ('Mayagüez',        18.201345, -67.145155),
-  ('Moca',            18.396793, -67.147904),
-  ('Morovis',         18.325785, -66.406559),
-  ('Naguabo',         18.211625, -65.734884),
-  ('Naranjito',       18.300786, -66.244890),
-  ('Orocovis',        18.226922, -66.391169),
-  ('Patillas',        18.003738, -66.013406),
-  ('Peñuelas',        18.063358, -66.727390),
-  ('Ponce',           18.011077, -66.614062),
-  ('Quebradillas',    18.473833, -66.938512),
-  ('Rincón',          18.340151, -67.249946),
-  ('Río Grande',      18.380230, -65.831270),
-  ('Sabana Grande',   18.077739, -66.960455),
-  ('Salinas',         18.026837, -66.259620),
-  ('San Germán',      18.080708, -67.041110),
-  ('San Juan',        18.463203, -66.114757),
-  ('San Lorenzo',     18.188691, -65.976586),
-  ('San Sebastián',   18.336620, -66.990180),
-  ('Santa Isabel',    17.966078, -66.404892),
-  ('Toa Alta',        18.388282, -66.248224),
-  ('Toa Baja',        18.444471, -66.254329),
-  ('Trujillo Alto',   18.354672, -66.007388),
-  ('Utuado',          18.265510, -66.700452),
-  ('Vega Alta',       18.412170, -66.331281),
-  ('Vega Baja',       18.446146, -66.404197),
-  ('Vieques',         18.126285, -65.440099),
-  ('Villalba',        18.121755, -66.498579),
-  ('Yabucoa',         18.050520, -65.879329),
-  ('Yauco',           18.034964, -66.849898);
+INSERT INTO
+    location (city, latitude, longitude)
+VALUES (
+        'Adjuntas',
+        18.163485,
+        -66.723158
+    ),
+    (
+        'Aguada',
+        18.380158,
+        -67.188704
+    ),
+    (
+        'Aguadilla',
+        18.427445,
+        -67.154070
+    ),
+    (
+        'Aguas Buenas',
+        18.256899,
+        -66.102944
+    ),
+    (
+        'Aibonito',
+        18.139959,
+        -66.266002
+    ),
+    (
+        'Añasco',
+        18.285448,
+        -67.140294
+    ),
+    (
+        'Arecibo',
+        18.470514,
+        -66.721847
+    ),
+    (
+        'Arroyo',
+        17.996422,
+        -66.092488
+    ),
+    (
+        'Barceloneta',
+        18.450500,
+        -66.538510
+    ),
+    (
+        'Barranquitas',
+        18.186624,
+        -66.306280
+    ),
+    (
+        'Bayamón',
+        18.389396,
+        -66.165322
+    ),
+    (
+        'Cabo Rojo',
+        18.086627,
+        -67.145735
+    ),
+    (
+        'Caguas',
+        18.238800,
+        -66.035249
+    ),
+    (
+        'Camuy',
+        18.483833,
+        -66.844899
+    ),
+    (
+        'Canóvanas',
+        18.374875,
+        -65.899753
+    ),
+    (
+        'Carolina',
+        18.368088,
+        -66.042473
+    ),
+    (
+        'Cataño',
+        18.446536,
+        -66.135578
+    ),
+    (
+        'Cayey',
+        18.111905,
+        -66.166000
+    ),
+    (
+        'Ceiba',
+        18.247518,
+        -65.908495
+    ),
+    (
+        'Ciales',
+        18.336062,
+        -66.468782
+    ),
+    (
+        'Cidra',
+        18.175791,
+        -66.161278
+    ),
+    (
+        'Coamo',
+        18.079962,
+        -66.357947
+    ),
+    (
+        'Comerío',
+        18.219200,
+        -66.225602
+    ),
+    (
+        'Corozal',
+        18.341060,
+        -66.316840
+    ),
+    (
+        'Culebra',
+        18.310394,
+        -65.303071
+    ),
+    (
+        'Dorado',
+        18.458830,
+        -66.267670
+    ),
+    (
+        'Fajardo',
+        18.325215,
+        -65.653936
+    ),
+    (
+        'Florida',
+        18.362450,
+        -66.561280
+    ),
+    (
+        'Guánica',
+        17.972515,
+        -66.908626
+    ),
+    (
+        'Guayama',
+        17.984133,
+        -66.113777
+    ),
+    (
+        'Guayanilla',
+        18.019131,
+        -66.791842
+    ),
+    (
+        'Guaynabo',
+        18.361295,
+        -66.110296
+    ),
+    (
+        'Gurabo',
+        18.254399,
+        -65.972942
+    ),
+    (
+        'Hatillo',
+        18.428464,
+        -66.787532
+    ),
+    (
+        'Hormigueros',
+        18.133464,
+        -67.112812
+    ),
+    (
+        'Humacao',
+        18.151574,
+        -65.824853
+    ),
+    (
+        'Isabela',
+        18.500780,
+        -67.024350
+    ),
+    (
+        'Jayuya',
+        18.218567,
+        -66.591562
+    ),
+    (
+        'Juana Díaz',
+        18.053437,
+        -66.507508
+    ),
+    (
+        'Juncos',
+        18.227456,
+        -65.920997
+    ),
+    (
+        'Lajas',
+        18.049962,
+        -67.059345
+    ),
+    (
+        'Lares',
+        18.294670,
+        -66.877120
+    ),
+    (
+        'Las Marías',
+        18.251900,
+        -66.992120
+    ),
+    (
+        'Las Piedras',
+        18.185575,
+        -65.873625
+    ),
+    (
+        'Loíza',
+        18.432990,
+        -65.878360
+    ),
+    (
+        'Luquillo',
+        18.372451,
+        -65.716551
+    ),
+    (
+        'Manatí',
+        18.418122,
+        -66.526278
+    ),
+    (
+        'Maricao',
+        18.180790,
+        -66.979900
+    ),
+    (
+        'Maunabo',
+        18.007189,
+        -65.899329
+    ),
+    (
+        'Mayagüez',
+        18.201345,
+        -67.145155
+    ),
+    ('Moca', 18.396793, -67.147904),
+    (
+        'Morovis',
+        18.325785,
+        -66.406559
+    ),
+    (
+        'Naguabo',
+        18.211625,
+        -65.734884
+    ),
+    (
+        'Naranjito',
+        18.300786,
+        -66.244890
+    ),
+    (
+        'Orocovis',
+        18.226922,
+        -66.391169
+    ),
+    (
+        'Patillas',
+        18.003738,
+        -66.013406
+    ),
+    (
+        'Peñuelas',
+        18.063358,
+        -66.727390
+    ),
+    (
+        'Ponce',
+        18.011077,
+        -66.614062
+    ),
+    (
+        'Quebradillas',
+        18.473833,
+        -66.938512
+    ),
+    (
+        'Rincón',
+        18.340151,
+        -67.249946
+    ),
+    (
+        'Río Grande',
+        18.380230,
+        -65.831270
+    ),
+    (
+        'Sabana Grande',
+        18.077739,
+        -66.960455
+    ),
+    (
+        'Salinas',
+        18.026837,
+        -66.259620
+    ),
+    (
+        'San Germán',
+        18.080708,
+        -67.041110
+    ),
+    (
+        'San Juan',
+        18.463203,
+        -66.114757
+    ),
+    (
+        'San Lorenzo',
+        18.188691,
+        -65.976586
+    ),
+    (
+        'San Sebastián',
+        18.336620,
+        -66.990180
+    ),
+    (
+        'Santa Isabel',
+        17.966078,
+        -66.404892
+    ),
+    (
+        'Toa Alta',
+        18.388282,
+        -66.248224
+    ),
+    (
+        'Toa Baja',
+        18.444471,
+        -66.254329
+    ),
+    (
+        'Trujillo Alto',
+        18.354672,
+        -66.007388
+    ),
+    (
+        'Utuado',
+        18.265510,
+        -66.700452
+    ),
+    (
+        'Vega Alta',
+        18.412170,
+        -66.331281
+    ),
+    (
+        'Vega Baja',
+        18.446146,
+        -66.404197
+    ),
+    (
+        'Vieques',
+        18.126285,
+        -65.440099
+    ),
+    (
+        'Villalba',
+        18.121755,
+        -66.498579
+    ),
+    (
+        'Yabucoa',
+        18.050520,
+        -65.879329
+    ),
+    (
+        'Yauco',
+        18.034964,
+        -66.849898
+    );
 
--- Insert reports with realistic Puerto Rico issues
+-- Insert reports with realistic Puerto Rico issues (NOW WITH CITY COLUMN)
 INSERT INTO
     reports (
         title,
@@ -632,6 +937,7 @@ INSERT INTO
         validated_by,
         resolved_by,
         location,
+        city,
         image_url,
         rating,
         created_at,
@@ -648,6 +954,7 @@ VALUES
         NULL,
         NULL,
         65,
+        'San Juan',
         NULL,
         0,
         '2025-01-31 14:05:39',
@@ -663,6 +970,7 @@ VALUES
         2,
         NULL,
         65,
+        'San Juan',
         NULL,
         0,
         '2025-02-07 11:08:45',
@@ -678,6 +986,7 @@ VALUES
         3,
         3,
         65,
+        'San Juan',
         NULL,
         4,
         '2025-02-14 06:28:36',
@@ -693,6 +1002,7 @@ VALUES
         NULL,
         NULL,
         65,
+        'San Juan',
         NULL,
         0,
         '2025-02-26 21:43:16',
@@ -708,6 +1018,7 @@ VALUES
         4,
         NULL,
         13,
+        'Caguas',
         NULL,
         0,
         '2025-03-13 14:01:44',
@@ -723,6 +1034,7 @@ VALUES
         NULL,
         NULL,
         11,
+        'Bayamón',
         NULL,
         0,
         '2025-04-07 01:28:50',
@@ -738,6 +1050,7 @@ VALUES
         1,
         1,
         16,
+        'Carolina',
         NULL,
         5,
         '2025-05-13 15:08:33',
@@ -753,6 +1066,7 @@ VALUES
         NULL,
         NULL,
         32,
+        'Guaynabo',
         NULL,
         0,
         '2025-06-07 06:51:19',
@@ -768,6 +1082,7 @@ VALUES
         5,
         NULL,
         16,
+        'Carolina',
         NULL,
         0,
         '2025-06-12 12:32:01',
@@ -783,6 +1098,7 @@ VALUES
         NULL,
         NULL,
         13,
+        'Caguas',
         NULL,
         0,
         '2025-06-18 21:37:17',
@@ -798,6 +1114,7 @@ VALUES
         2,
         2,
         74,
+        'Vega Baja',
         NULL,
         3,
         '2025-06-22 14:58:02',
@@ -813,6 +1130,7 @@ VALUES
         NULL,
         NULL,
         7,
+        'Arecibo',
         NULL,
         0,
         '2025-06-29 18:30:01',
@@ -828,6 +1146,7 @@ VALUES
         3,
         NULL,
         36,
+        'Humacao',
         NULL,
         0,
         '2025-07-06 23:55:59',
@@ -843,6 +1162,7 @@ VALUES
         NULL,
         NULL,
         58,
+        'Ponce',
         NULL,
         0,
         '2025-07-21 23:53:56',
@@ -858,6 +1178,7 @@ VALUES
         4,
         4,
         50,
+        'Mayagüez',
         NULL,
         4,
         '2025-07-28 15:06:42',
@@ -873,6 +1194,7 @@ VALUES
         NULL,
         NULL,
         12,
+        'Cabo Rojo',
         NULL,
         0,
         '2025-08-20 02:01:46',
@@ -888,6 +1210,7 @@ VALUES
         5,
         NULL,
         78,
+        'Yauco',
         NULL,
         0,
         '2025-08-31 10:39:07',
@@ -903,6 +1226,7 @@ VALUES
         NULL,
         NULL,
         64,
+        'San Germán',
         NULL,
         0,
         '2025-09-03 21:04:28',
@@ -918,6 +1242,7 @@ VALUES
         1,
         1,
         3,
+        'Aguadilla',
         NULL,
         5,
         '2025-09-17 12:52:13',
@@ -933,6 +1258,7 @@ VALUES
         NULL,
         NULL,
         70,
+        'Toa Baja',
         NULL,
         0,
         '2025-09-21 13:39:40',
@@ -948,6 +1274,7 @@ VALUES
         2,
         NULL,
         45,
+        'Loíza',
         NULL,
         0,
         '2025-10-01 17:21:44',
@@ -963,6 +1290,7 @@ VALUES
         NULL,
         NULL,
         47,
+        'Manatí',
         NULL,
         0,
         '2025-11-02 10:50:46',
@@ -978,6 +1306,7 @@ VALUES
         3,
         NULL,
         27,
+        'Fajardo',
         NULL,
         0,
         '2025-11-20 17:21:18',
@@ -993,6 +1322,7 @@ VALUES
         4,
         4,
         60,
+        'Rincón',
         NULL,
         4,
         '2025-11-30 04:42:11',
@@ -1008,34 +1338,33 @@ VALUES
         NULL,
         NULL,
         34,
+        'Hatillo',
         NULL,
         0,
         '2025-12-01 11:58:53',
         NULL
     );
 
-
 -- Insert mock data into pinned_reports table
 INSERT INTO
     pinned_reports (user_id, report_id, pinned_at)
-VALUES
-    (1, 3,  '2025-02-16 09:00:00'),
-    (1, 7,  '2025-05-15 14:30:00'),
+VALUES (1, 3, '2025-02-16 09:00:00'),
+    (1, 7, '2025-05-15 14:30:00'),
     (1, 11, '2025-06-24 11:15:00'),
-    (2, 2,  '2025-02-10 10:45:00'),
-    (2, 8,  '2025-06-10 16:20:00'),
+    (2, 2, '2025-02-10 10:45:00'),
+    (2, 8, '2025-06-10 16:20:00'),
     (2, 12, '2025-07-02 08:30:00'),
     (2, 17, '2025-09-03 13:15:00'),
-    (3, 4,  '2025-03-01 09:45:00'),
+    (3, 4, '2025-03-01 09:45:00'),
     (3, 16, '2025-08-24 12:00:00'),
     (3, 25, '2025-12-06 10:30:00'),
-    (4, 5,  '2025-03-17 15:30:00'),
+    (4, 5, '2025-03-17 15:30:00'),
     (4, 15, '2025-08-01 14:15:00'),
     (4, 24, '2025-12-02 11:45:00'),
-    (6, 1,  '2025-02-03 08:45:00'),
+    (6, 1, '2025-02-03 08:45:00'),
     (6, 10, '2025-06-22 10:30:00'),
-    (7, 2,  '2025-02-12 12:15:00'),
+    (7, 2, '2025-02-12 12:15:00'),
     (7, 13, '2025-07-10 09:20:00'),
-    (8, 3,  '2025-02-19 14:00:00'),
+    (8, 3, '2025-02-19 14:00:00'),
     (8, 19, '2025-09-22 16:45:00'),
     (10, 14, '2025-07-25 10:00:00');

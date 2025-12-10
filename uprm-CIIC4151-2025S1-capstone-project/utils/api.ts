@@ -250,7 +250,6 @@ export async function createReport(data: ReportFormData) {
     ...data,
     user_id: creds.userId,
     image_url: data.image_url?.trim() || null,
-    location_id: data.location_id ?? null,
   };
 
   return request("/reports", "POST", payload);

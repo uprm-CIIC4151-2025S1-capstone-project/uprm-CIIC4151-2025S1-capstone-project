@@ -217,25 +217,26 @@ class ReportsDAO:
         description: str,
         category: str = "other",
         location_id: int | None = None,
+        city: str | None = None,
         image_url: str | None = None,
         created_by: int | None = None,
     ):
         """Insert a new report and increment user's total_reports."""
         query = """
-            INSERT INTO reports (title, description, category, location, image_url, created_by)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO reports (title, description, category, location, city, image_url, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id, title, description, status, category, created_by,
                       validated_by, resolved_by, created_at, resolved_at,
-                      location, image_url, rating
+                      location, city, image_url, rating
         """
         with self.conn.cursor() as cur:
             cur.execute(
-                query, (title, description, category, location_id, image_url, created_by)
+                query, (title, description, category, location_id, city, image_url, created_by)
             )
             new_report = cur.fetchone()
             if not new_report:
                 raise Exception("Report creation failed, no row returned from INSERT")
-            
+
             if created_by is not None:
                 cur.execute(
                     "UPDATE users SET total_reports = total_reports + 1 WHERE id = %s",
@@ -654,7 +655,7 @@ class ReportsDAO:
         with self.conn.cursor() as cur:
             cur.execute(query, (admin_id, admin_id))
             return cur.fetchone()[0]
-        
+
     def rate_report(self, report_id: int, user_id: int):
         """
         Add a rating from user_id to report_id.
@@ -692,7 +693,7 @@ class ReportsDAO:
 
             self.conn.commit()
             return {"rating": new_rating if new_rating is not None else 0, "added": inserted}
-        
+
     def unrate_report(self, report_id: int, user_id: int):
         """
         Remove user's rating for a report (unstar).
