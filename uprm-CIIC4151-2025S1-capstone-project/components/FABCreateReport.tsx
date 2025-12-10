@@ -8,6 +8,13 @@ interface CreateReportFABProps {
   testID?: string;
 }
 
+/**
+ * A FAB button that opens the report submission form when pressed.
+ * @param {CreateReportFABProps} props - an object containing the props for the FAB.
+ * @param {() => void} onPress - a function to call when the button is pressed.
+ * @param {Object} style - an optional style object to override the default style of the FAB.
+ * @param {string} testID - an optional test ID to assign to the FAB.
+ */
 export default function FABCreateReport({
   onPress,
   style,

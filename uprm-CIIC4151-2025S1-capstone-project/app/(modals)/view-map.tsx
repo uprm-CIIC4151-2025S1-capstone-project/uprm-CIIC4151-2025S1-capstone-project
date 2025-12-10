@@ -4,6 +4,22 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator, DataTable, Text } from "react-native-paper";
 
+/**
+ * Displays a list of the top 10 locations by the number of reports
+ * submitted at each location.
+ *
+ * Uses the `getLocationsWithReports` API to fetch the list of
+ * locations with their report counts.
+ *
+ * Renders a loading indicator while the data is being fetched.
+ *
+ * If the data fetch fails, it logs an error message to the console.
+ *
+ * If no locations are found, it displays a message indicating that.
+ *
+ * @returns A React component that displays a list of the top 10
+ * locations by the number of reports.
+ */
 export default function ViewMapScreen() {
   const [locations, setLocations] = useState<LocationWithReports[]>([]);
   const [loading, setLoading] = useState(true);

@@ -7,6 +7,12 @@ import { StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * IndexScreen displays a login form when the user is not logged in, and a
+ * sign up form when the user is logged in. It also displays a button to
+ * toggle between the two forms.
+ * @returns {JSX.Element} The IndexScreen component.
+ */
 export default function IndexScreen() {
   const [isLogin, setIsLogin] = useState(true);
   const router = useRouter();

@@ -8,6 +8,24 @@ interface SystemStatsCardProps {
   stats: any;
 }
 
+/**
+ * SystemStatsCard component
+ *
+ * Displays a dashboard with system-wide stats.
+ * It expects a stats object with the following properties:
+ *   - total_reports: number
+ *   - open_reports: number
+ *   - in_progress_reports: number
+ *   - resolved_reports: number
+ *   - denied_reports: number
+ *   - closed_reports: number (suma de resolved + denied)
+ *   - pinned_reports_count: number
+ *   - total_users: number
+ *   - avg_rating: number
+ *
+ * @param {SystemStatsCardProps} props - Properties passed to the component
+ * @returns {JSX.Element} - The rendered component
+ */
 export default function SystemStatsCard({ stats }: SystemStatsCardProps) {
   const { colors } = useAppColors();
 

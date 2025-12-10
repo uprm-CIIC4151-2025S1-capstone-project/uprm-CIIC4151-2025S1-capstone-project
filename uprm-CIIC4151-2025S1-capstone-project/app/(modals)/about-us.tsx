@@ -4,6 +4,16 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * A modal that displays information about the app and its development team.
+ *
+ * It shows the app's mission, what it does, its values, and team roles.
+ *
+ * The modal also provides contact information for users to reach out
+ * to the development team with questions or suggestions.
+ *
+ * @return {React.ReactElement}
+ */
 export default function AboutUsModal() {
   const { colors } = useAppColors();
 

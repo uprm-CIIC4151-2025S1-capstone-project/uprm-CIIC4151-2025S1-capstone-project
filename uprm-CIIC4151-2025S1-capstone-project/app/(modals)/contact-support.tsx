@@ -5,6 +5,10 @@ import { Alert, Linking, ScrollView, StyleSheet } from "react-native";
 import { Button, Card, Divider, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * Component for displaying contact support information and options for reaching out to the app developers.
+ * @returns {JSX.Element} A JSX element for displaying contact support information and options for reaching out to the app developers.
+ */
 export default function ContactSupportModal() {
   const { colors } = useAppColors();
 

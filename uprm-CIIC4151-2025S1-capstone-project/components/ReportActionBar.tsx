@@ -21,6 +21,22 @@ interface ReportActionBarProps {
   showBack?: boolean; // <-- optional prop to control internal Back button
 }
 
+/**
+ * ReportActionBar component displays a row of buttons below a single report
+ * to allow users to edit, rate, pin, and change the status of the report
+ * The buttons are conditionally rendered based on the user's permissions and the report's status
+ * @param {ReportData} report - The report data from the API
+ * @param {function} onEdit - Callback to edit the report
+ * @param {function} onRating - Callback to rate the report
+ * @param {function} onStatusChange - Callback to change the status of the report
+ * @param {boolean} isPinned - Whether the report is pinned or not
+ * @param {function} onPin - Callback to pin or unpin the report
+ * @param {boolean} isPinning - Whether the pin/unpin action is in progress or not
+ * @param {boolean} isRating - Whether the rating action is in progress or not
+ * @param {boolean} isRated - Whether the report is rated or not
+ * @param {number} ratingCount - The total number of ratings for the report
+ * @param {boolean} showBack - Optional prop to control internal Back button (default true for backward compatibility)
+ */
 export const ReportActionBar = ({
   report,
   onEdit,

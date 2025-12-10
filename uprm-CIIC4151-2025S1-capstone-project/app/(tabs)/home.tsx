@@ -1,4 +1,4 @@
-// TODO Remove onViewAll 
+// TODO Remove onViewAll
 import FABCreateReport from "@/components/FABCreateReport";
 import PinnedReports from "@/components/PinnedReports";
 import QuickActionsCard from "@/components/QuickActionsCard";
@@ -14,6 +14,12 @@ import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * HomeScreen displays the user's pinned reports, quick actions and
+ * a create report FAB.
+ * It also handles loading and error states.
+ * @returns {JSX.Element} The HomeScreen component.
+ */
 export default function HomeScreen() {
   const router = useRouter();
   const { colors } = useAppColors();

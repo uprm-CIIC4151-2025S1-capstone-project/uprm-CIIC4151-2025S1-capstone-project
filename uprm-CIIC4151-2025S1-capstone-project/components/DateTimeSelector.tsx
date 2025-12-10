@@ -9,6 +9,17 @@ export interface DateTimeSelectorProps {
   disabled?: boolean;
 }
 
+/**
+ * A React component that displays a date and time picker with the following options:
+ *   1. Month (all 12 months)
+ *   2. Day (all 31 days)
+ *   3. Year (current year and 5 years before and after)
+ *   4. Hour (12-hour format with AM/PM)
+ *   5. Minute (all 60 minutes)
+ * When the user clicks the "Apply" button, it calls the onApply function with the selected filter options.
+ * If the user clicks the "Clear" button, it resets all filter options to their default values.
+ * If the user clicks the "Close" button, it calls the onDismiss function.
+ */
 export default function DateTimeSelector({
   value,
   onChange,

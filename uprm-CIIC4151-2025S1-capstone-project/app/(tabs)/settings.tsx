@@ -4,6 +4,12 @@ import { ScrollView, StyleSheet } from "react-native";
 import { Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * A screen for managing application settings, including
+ * authentication, notification, and security action settings.
+ *
+ * @returns {jsx.Element} The rendered settings screen.
+ */
 export default function SettingsScreen() {
   const router = useRouter();
   const { colors } = useAppColors();

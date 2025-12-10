@@ -60,6 +60,27 @@ const cities = [
   "Toa Baja","Trujillo Alto","Utuado","Vega Alta","Vega Baja","Vieques","Villalba","Yabucoa","Yauco"
 ];
 
+
+/**
+ * FilterSheetModal is a React component that displays a filter sheet modal
+ * with the following filter options:
+ *   1. Status (all, open, in_progress, resolved, denied)
+ *   2. Category (all, pothole, street_light, traffic_signal, road_DAMAGE, sanitation, flooding, water_outage, wandering_waste, electrical_hazard, sinkhole, fallen_tree, pipe_leak)
+ *   3. Location (all 78 municipalities in Puerto Rico)
+ *   4. Sort order (newest first, oldest first)
+ * When the user clicks the "Apply" button, it calls the onApply function
+ * with the selected filter options. If the user clicks the "Clear" button, it
+ * resets all filter options to their default values.
+ * If the user clicks the "Close" button, it calls the onDismiss function.
+ * @param {Props} props
+ * @param {boolean} props.visible - Whether the filter sheet modal is visible
+ * @param {() => void} props.onDismiss - Callback function to call when the user clicks the "Close" button
+ * @param {StatusFilter} props.status - The initial status filter value
+ * @param {CategoryFilter} props.category - The initial category filter value
+ * @param {SortOrder} props.sortOrder - The initial sort order filter value
+ * @param {string | null} props.location - The initial location filter value
+ * @param {(filters: { status: StatusFilter; category: CategoryFilter; sortOrder: SortOrder; location?: string | null; }) => void} props.onApply - Callback function to call when the user clicks the "Apply" button
+ */
 export default function FilterSheetModal(props: Props) {
   const { visible, onDismiss, status, category, sortOrder, location, onApply } = props;
   const { colors } = useAppColors();

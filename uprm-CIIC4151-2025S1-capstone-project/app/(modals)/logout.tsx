@@ -6,6 +6,12 @@ import { StyleSheet, View } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * A modal screen for logging out of an account. This includes
+ * a warning about the need to sign in again to access the account, as
+ * well as information about report and preference preservation.
+ * @returns {jsx.Element} The rendered modal screen.
+ */
 export default function LogoutModal() {
   const router = useRouter();
   const { colors } = useAppColors();

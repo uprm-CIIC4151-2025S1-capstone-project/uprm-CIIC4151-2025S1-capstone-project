@@ -7,6 +7,14 @@ interface ProfileErrorStateProps {
   onRetry: () => void;
 }
 
+/**
+ * A component that displays an error message and a retry button
+ * when the profile page encounters an error.
+ *
+ * @param {string} error - The error message to display.
+ * @param {() => void} onRetry - A function to call when the user wants to retry loading the profile.
+ * @returns {JSX.Element} The rendered error state component.
+ */
 export default function ProfileErrorState({
   error,
   onRetry,

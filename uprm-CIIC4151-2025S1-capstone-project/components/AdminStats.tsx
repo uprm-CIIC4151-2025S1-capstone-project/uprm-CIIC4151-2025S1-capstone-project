@@ -3,6 +3,14 @@ import { Text, Card } from "react-native-paper";
 import type { AdminStatsProps } from "@/types/interfaces";
 import { useAppColors } from "@/hooks/useAppColors";
 
+/**
+ * AdminStats component
+ *
+ * Displays a dashboard for the admin with stats about assigned, pending and resolved reports.
+ *
+ * @param {AdminStatsProps} props - Properties passed to the component
+ * @returns {JSX.Element} - The rendered component
+ */
 export default function AdminStats({
   assigned,
   pending,

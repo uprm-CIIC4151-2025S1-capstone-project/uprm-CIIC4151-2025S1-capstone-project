@@ -23,6 +23,14 @@ interface Location {
   city: string;
 }
 
+/**
+ * A form component for submitting or editing a report.
+ * It provides a form for users to input their report data, and handles
+ * submitting or editing the report accordingly.
+ * It also provides a loading indicator and cancel/clear buttons.
+ * @param {ReportFormData | null} initialData - The data to prefill the form with, if editing a report.
+ * @returns {React.ReactElement} - The form component.
+ */
 export default function ReportForm({ onSubmit, onCancel, onClear, loading = false, initialData, }: ReportFormProps) {
   const { colors } = useAppColors();
   const [title, setTitle] = useState("");

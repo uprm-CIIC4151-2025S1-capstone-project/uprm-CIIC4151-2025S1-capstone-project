@@ -4,6 +4,15 @@ import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Divider, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * A modal that displays the app's privacy policy.
+ *
+ * It provides a brief summary of the key aspects of the privacy policy
+ * and links to the full policy on the app's website.
+ *
+ * The full policy covers information collection, data usage, and
+ * protection practices.
+ */
 export default function PrivacyPolicyModal() {
   const { colors } = useAppColors();
 

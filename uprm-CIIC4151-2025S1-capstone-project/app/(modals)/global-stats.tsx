@@ -35,6 +35,18 @@ type AvgResolutionTime = {
 const formatNumber = (value: number | null | undefined, fractionDigits = 2) =>
   typeof value === "number" ? value.toFixed(fractionDigits) : "-";
 
+/**
+ * GlobalStatsModal is a React component that displays various global statistics.
+ *
+ * It fetches the following statistics on mount:
+ *   1. Top categories of reports
+ *   2. Monthly report volume
+ *   3. Resolution rate by department
+ *   4. Avg resolution time by department
+ *
+ * If there is an error fetching the statistics, it displays an error message.
+ * If the statistics are still loading, it displays an ActivityIndicator.
+ */
 const GlobalStatsModal = () => {
   const [topCategories, setTopCategories] = useState<TopCategory[]>([]);
   const [monthlyVolume, setMonthlyVolume] = useState<MonthlyVolume[]>([]);

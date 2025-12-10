@@ -24,7 +24,7 @@ CREATE TABLE users (
     PASSWORD VARCHAR(255) NOT NULL,
     ADMIN BOOLEAN DEFAULT FALSE,
     suspended BOOLEAN DEFAULT FALSE,
-    pinned BOOLEAN DEFAULT FALSE, -- not used
+    pinned BOOLEAN DEFAULT FALSE,
     total_reports INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -926,7 +926,7 @@ VALUES (
         -66.849898
     );
 
--- Insert reports with realistic Puerto Rico issues (NOW WITH CITY COLUMN)
+-- Insert reports with realistic Puerto Rico issues
 INSERT INTO
     reports (
         title,

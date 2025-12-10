@@ -14,6 +14,14 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 
+/**
+ * A modal component for submitting or editing a report.
+ * It provides a form for users to input their report data, and handles
+ * submitting or editing the report accordingly.
+ * It also provides a loading indicator and cancel/clear buttons.
+ * @param {ReportFormData | null} initialData - The data to prefill the form with, if editing a report.
+ * @returns {React.ReactElement} - The modal component.
+ */
 export default function ReportFormModal() {
   const router = useRouter();
   const { colors } = useAppColors();

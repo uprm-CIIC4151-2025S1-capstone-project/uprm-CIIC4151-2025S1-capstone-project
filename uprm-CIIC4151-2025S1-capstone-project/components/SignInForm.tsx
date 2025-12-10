@@ -9,6 +9,14 @@ interface SignInFormProps {
   onSuccess: () => void;
 }
 
+/**
+ * SignInForm component with email, password, and confirm password inputs.
+ *
+ * Handles sign up action by calling the backend API.
+ * Saves credentials using the existing function signature.
+ * Displays an error message if the sign up credentials are invalid.
+ */
+
 export default function SignInForm({ onSuccess }: SignInFormProps) {
   const { colors } = useAppColors();
   const [email, setEmail] = useState("");

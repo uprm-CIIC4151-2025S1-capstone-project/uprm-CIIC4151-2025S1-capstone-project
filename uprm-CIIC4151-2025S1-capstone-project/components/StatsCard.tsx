@@ -27,6 +27,16 @@ export interface StatsCardProps {
   }[];
 }
 
+/**
+ * A component for displaying statistics with an optional scoring section.
+ *
+ * @param {string} title - The title of the statistics section.
+ * @param {string} [icon="chart-bar"] - The icon to display next to the title.
+ * @param {{label: string, value: number, color: string, description?: string}[]} stats - The statistics data to display.
+ * @param {boolean} [showScore=false] - Whether to show the scoring section.
+ * @param {{score: number, maxPossibleScore: number, percentage: number, grade: "A" | "B" | "C" | "D" | "F", gradeColor: string}} resolutionMetrics - The resolution metrics to display in the scoring section.
+ * @param {{icon: string, label: string, value: string | number, color?: string}[]} additionalFooterItems - Additional items to display in the footer section.
+ */
 export default function StatsCard({
   title,
   icon = "chart-bar",
