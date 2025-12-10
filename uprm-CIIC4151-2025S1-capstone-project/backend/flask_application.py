@@ -7,6 +7,7 @@ from handler.h_administrators import AdministratorsHandler
 from handler.h_locations import LocationsHandler
 from handler.h_departments import DepartmentsHandler
 from handler.h_pinned_reports import PinnedReportsHandler
+from handler.h_global_stats import GlobalStatsHandler
 
 from constants import HTTP_STATUS
 from dao.d_administrators import AdministratorsDAO
@@ -556,7 +557,33 @@ def get_assigned_reports():
     limit = request.args.get("limit", default=10, type=int)
     return handler.get_assigned_reports(admin_id, page, limit)
 
+@app.route("/stats/resolution-rate-by-department", methods=["GET"])
+def get_resolution_rate_by_department():
+    handler = GlobalStatsHandler()
+    return handler.get_resolution_rate_by_department()
 
+@app.route("/stats/top-categories-percentage", methods=["GET"])
+def get_top_categories_percentage():
+    handler = GlobalStatsHandler()
+    # default: top 3 categories
+    n = request.args.get("n", default=3, type=int)
+    if n <= 0:
+        n = 1
+    return handler.get_top_categories_percentage(n)
+
+@app.route("/stats/avg-resolution-time-by-department", methods=["GET"])
+def get_avg_resolution_time_by_department():
+    handler = GlobalStatsHandler()
+    return handler.get_avg_resolution_time_by_department()
+
+@app.route("/stats/monthly-report-volume", methods=["GET"])
+def get_monthly_report_volume():
+    handler = GlobalStatsHandler()
+    # default to last 12 months if not provided
+    months = request.args.get("months", default=12, type=int)
+    if months <= 0:
+        months = 1
+    return handler.get_monthly_report_volume(months)
 
 # -------------------------------------------------------
 # SYSTEM HEALTH

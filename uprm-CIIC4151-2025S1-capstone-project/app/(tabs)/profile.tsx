@@ -19,7 +19,7 @@ import { useRouter } from "expo-router";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { Button, ActivityIndicator, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
@@ -140,6 +140,10 @@ export default function ProfileScreen() {
     });
   };
 
+  const handleStatsPress = () => {
+    router.push("/(modals)/global-stats")
+  };
+
   const handleToggleRecentActivity = () => {
     setExpandedRecentActivity(!expandedRecentActivity);
   };
@@ -216,7 +220,16 @@ export default function ProfileScreen() {
                 resolved={adminStats?.resolved_personally || 0}
               />
             )}
-
+            <Button
+              mode="outlined"
+              onPress={handleStatsPress}
+              style={styles.actionButton}
+              contentStyle={styles.actionButtonContent}
+              buttonColor={colors.button.primary}
+              textColor={colors.button.text}
+            >
+              View Global Statistics
+            </Button>
             <RecentActivitySection
               reports={getRecentActivityReports()}
               expanded={expandedRecentActivity}
@@ -257,5 +270,12 @@ const createStyles = (colors: any) =>
     },
     loadingText: {
       color: colors.text,
+    },
+    actionButton: {
+      flex: 1,
+      borderColor: colors.border,
+    },
+    actionButtonContent: {
+      height: 44,
     },
   });
