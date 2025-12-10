@@ -156,6 +156,10 @@ export default function RootLayout() {
               options={{ presentation: "modal", title: "Delete Account" }}
             />
             <Stack.Screen
+              name="(modals)/global-stats"
+              options={{ presentation: "modal", title: "Global Statistics" }}
+            />
+            <Stack.Screen
               name="(modals)/logout"
               options={{ presentation: "modal", title: "Logout" }}
             />

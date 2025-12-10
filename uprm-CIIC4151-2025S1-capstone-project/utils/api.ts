@@ -648,6 +648,26 @@ export async function getAllAdminStats() {
   return request("/administrators/stats/all");
 }
 
+export async function getResolutionRateByDepartment() {
+  console.log("Fetching resolution rate by department");
+  return request("/stats/resolution-rate-by-department");
+}
+
+export async function getAvgResolutionTimeByDepartment() {
+  console.log("Fetching avg resolution time by department");
+  return request("/stats/avg-resolution-time-by-department");
+}
+
+export async function getMonthlyReportVolume() {
+  console.log("Fetching monthly report volume");
+  return request("/stats/monthly-report-volume");
+}
+
+export async function getTopCategoriesPercentage() {
+  console.log("Fetching top categories percentage");
+  return request("/stats/top-categories-percentage");
+}
+
 // =============================================================================
 // ADMIN DASHBOARD
 // =============================================================================

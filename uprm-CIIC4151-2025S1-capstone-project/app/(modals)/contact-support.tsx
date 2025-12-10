@@ -36,7 +36,7 @@ export default function ContactSupportModal() {
 
   const handleWebsitePress = () => {
     Linking.openURL(
-      "http://github.com/Jonathan-Rod/uprm-CIIC4151-2025S1-capstone-project/blob/main/README.md"
+      "https://github.com/uprm-CIIC4151-2025S1-capstone-project/uprm-CIIC4151-2025S1-capstone-project/blob/main/README.md"
     );
   };
 
