@@ -131,6 +131,7 @@ export default function ReportCard({ report, onPress }: ReportCardProps) {
   const statusStyles = getStatusStyles(report.status);
   const styles = createStyles(colors);
 
+  const numericRating = Number(report.rating ?? 0);
   return (
     <Card
       onPress={handlePress}
@@ -219,7 +220,7 @@ export default function ReportCard({ report, onPress }: ReportCardProps) {
             </View>
           )}
 
-          {report.rating && (
+          {numericRating > 0 && (
             <View style={styles.metaItem}>
               <MaterialCommunityIcons
                 name="thumb-up-outline"
@@ -231,7 +232,7 @@ export default function ReportCard({ report, onPress }: ReportCardProps) {
                 Rating:
               </Text>
               <Text variant="bodySmall" style={styles.ratingValue}>
-                {report.rating}
+                {numericRating}
               </Text>
             </View>
           )}

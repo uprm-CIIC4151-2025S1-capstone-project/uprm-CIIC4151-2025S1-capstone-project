@@ -45,6 +45,7 @@ export default function ReportForm({ onSubmit, onCancel, onClear, loading = fals
     setDescription(initialData.description ?? "");
     setCategory((initialData.category as ReportCategory) || ReportCategory.OTHER);
     setLocationId(initialData.location_id ?? null);
+    setCity(initialData.city ?? "");     
     setImageUrl(initialData.image_url ?? "");
     setOccurredOn(
       initialData.occurred_on
