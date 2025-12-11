@@ -206,7 +206,7 @@ export default function ReportCard({ report, onPress }: ReportCardProps) {
             </Text>
           </View>
 
-          {report.resolved_at && (
+          {report.status === ReportStatus.RESOLVED && report.resolved_at && (
             <View style={styles.metaItem}>
               <MaterialCommunityIcons
                 name="calendar-check"

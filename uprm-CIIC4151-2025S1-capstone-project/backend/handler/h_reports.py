@@ -604,7 +604,7 @@ class ReportsHandler:
 
 
     def change_report_status(self, report_id, data):
-        """Generic status change for admins"""
+        """Generic status change for admins (simplified for stability)."""
         try:
             if not data:
                 return jsonify({"error_msg": "Missing data"}), HTTP_STATUS.BAD_REQUEST
@@ -642,32 +642,21 @@ class ReportsHandler:
             elif status == "in_progress":
                 update_data["validated_by"] = admin_id
 
-            updated_report = dao.update_report(report_id, **update_data)
+            dao.update_report(report_id, **update_data)
 
-            # debug
-            print("DEBUG updated_report:", updated_report)
-
-            if not updated_report:
-                return jsonify({"error_msg": "Failed to update report status"}), HTTP_STATUS.INTERNAL_SERVER_ERROR
-
-            # If DAO returns dict, return it directly
-            if isinstance(updated_report, dict):
-                # optionally convert timestamps to ISO strings if needed
-                if isinstance(updated_report.get("created_at"), (datetime, )):
-                    updated_report["created_at"] = updated_report["created_at"].isoformat()
-                if isinstance(updated_report.get("resolved_at"), (datetime, )):
-                    updated_report["resolved_at"] = updated_report["resolved_at"].isoformat()
-                return jsonify(updated_report), HTTP_STATUS.OK
-
-            # Fallback: existing tuple -> mapping function
-            try:
-                return jsonify(self.map_to_dict(updated_report)), HTTP_STATUS.OK
-            except Exception as e:
-                print("map_to_dict failed:", e)
-                return jsonify({"error_msg": "Invalid updated row format", "detail": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
-
+            return (
+                jsonify(
+                    {
+                        "message": "Status updated successfully",
+                        "report_id": report_id,
+                        "new_status": status,
+                    }
+                ),
+                HTTP_STATUS.OK,
+            )
         except Exception as e:
-            return jsonify({"error_msg": str(e)}), HTTP_STATUS.INTERNAL_SERVER_ERROR
+            print("Error in change_report_status:", e)
+            return jsonify({"error_msg": "Internal server error"}), HTTP_STATUS.INTERNAL_SERVER_ERROR
 
 
     def get_status_options(self):
