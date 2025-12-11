@@ -24,7 +24,7 @@ const getApiBaseUrl = () => {
     }
 
     // Web
-    const webUrl = "http://localhost:5000";
+    const webUrl = "https://reporte-ciudadano-15eb46ea2557.herokuapp.com";
     console.log("Using Web URL:", webUrl);
     return webUrl;
   }
