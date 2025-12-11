@@ -8,7 +8,11 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+
+    "clean": "rm -rf web-build",
+    "build:web": "expo build:web",
+    "deploy": "npm run clean && npm run build:web && netlify deploy --prod --dir=web-build"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
