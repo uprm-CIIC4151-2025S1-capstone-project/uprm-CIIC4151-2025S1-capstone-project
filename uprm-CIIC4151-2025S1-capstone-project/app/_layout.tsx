@@ -9,7 +9,7 @@ import { ThemeProvider } from "@react-navigation/native";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import {
   ActivityIndicator,
   Button,
@@ -18,6 +18,13 @@ import {
 } from "react-native-paper";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
+// Suppress all alerts in dev mode
+if (__DEV__) {
+  (Alert as any).alert = (...args: any[]) => {
+    console.log("[ALERT SUPPRESSED]", ...args);
+  };
+}
 
 export const unstable_settings = {
   anchor: "(tabs)",
