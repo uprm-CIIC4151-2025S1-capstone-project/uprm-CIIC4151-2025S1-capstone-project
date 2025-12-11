@@ -323,7 +323,7 @@ class ReportsDAO:
 
             # commit after reading
             self.conn.commit()
-            return cur.fetchone()
+            return row
 
     def delete_report(self, report_id: int):
         """Delete a report by ID, return True if deleted."""
