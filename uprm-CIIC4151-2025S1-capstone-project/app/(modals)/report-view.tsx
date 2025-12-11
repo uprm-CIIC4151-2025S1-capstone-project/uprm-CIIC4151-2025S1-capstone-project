@@ -54,6 +54,7 @@ export default function ReportViewModal() {
   const [isRated, setIsRated] = useState(false); // user-specific
   const [isRating, setIsRating] = useState(false);
   const [ratingCount, setRatingCount] = useState(0); // total likes
+  const isOwner = currentUser?.id === report?.created_by;
 
   const [snackbar, setSnackbar] = useState({ visible: false, message: "" });
 
@@ -130,6 +131,7 @@ export default function ReportViewModal() {
 
   const handleRating = async () => {
     if (!report || !currentUser) return;
+    if (isOwner) return;
 
     // Optimistic UI update
     const newRated = !isRated;
@@ -157,7 +159,7 @@ export default function ReportViewModal() {
     if (!report || !currentUser?.isAdmin) return;
     try {
       await changeReportStatus(report.id, status, currentUser.id);
-      setReport({ ...report, status });
+      await loadReport();
       showSnackbar(`Status updated to ${status}`);
     } catch (err: any) {
       console.error("Error changing status:", err);
@@ -165,8 +167,11 @@ export default function ReportViewModal() {
     }
   };
 
-  const showSnackbar = (message: string) =>
-    setSnackbar({ visible: true, message });
+  const showSnackbar = (message: string) => {
+    console.log("[SNACKBAR SUPPRESSED]:", message);
+    // setSnackbar({ visible: true, message }); // Disabled for demo
+  };
+
   const hideSnackbar = () => setSnackbar({ visible: false, message: "" });
 
   const styles = createStyles(colors);
@@ -254,6 +259,7 @@ export default function ReportViewModal() {
               isRated={isRated}
               ratingCount={ratingCount}
               showBack={false}
+              isOwner={isOwner}
             />
 
             <ReportDetails report={report} ratingCount={ratingCount} />

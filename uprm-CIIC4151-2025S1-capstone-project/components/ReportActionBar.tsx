@@ -19,6 +19,7 @@ interface ReportActionBarProps {
   isRated: boolean;
   ratingCount: number;
   showBack?: boolean; // <-- optional prop to control internal Back button
+  isOwner?: boolean;
 }
 
 /**
@@ -49,6 +50,7 @@ export const ReportActionBar = ({
   isRated,
   ratingCount,
   showBack = true, // default true for backward compatibility
+  isOwner,
 }: ReportActionBarProps) => {
   const { user } = useAuth();
   const { colors } = useAppColors();
@@ -100,11 +102,17 @@ export const ReportActionBar = ({
           <View style={styles.ratingContainer}>
             <IconButton
               icon={isRated ? "star" : "star-outline"}
-              onPress={onRating}
+              onPress={isOwner ? undefined : onRating}
               size={24}
-              disabled={isRating}
+              disabled={isRating || isOwner}
               iconColor={isRated ? colors.error : colors.textSecondary}
-              accessibilityLabel={isRated ? "Remove rating" : "Add rating"}
+              accessibilityLabel={
+                isOwner
+                  ? "You cannot rate your own report"
+                  : isRated
+                  ? "Remove rating"
+                  : "Add rating"
+              }
             />
             <Text style={styles.ratingCount}>{ratingCount}</Text>
           </View>

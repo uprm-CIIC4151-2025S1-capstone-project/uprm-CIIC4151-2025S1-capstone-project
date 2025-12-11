@@ -59,10 +59,8 @@ export const ReportDetails = ({ report, ratingCount }: ReportDetailsProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [report.created_by, report.validated_by, report.resolved_by]);
 
-  // --- Location string: prefer top-level `report.city`, then `report.location.city`
+  // --- Location string
   const locationString = useMemo(() => {
-    // backend sometimes returns `city` at top-level (handler.map_to_dict),
-    // other times nested under location object. Cover both.
     const topCity = (report as any).city;
     if (topCity && typeof topCity === "string" && topCity.trim() !== "") return topCity;
     const nestedCity = (report.location as any)?.city;
@@ -119,9 +117,13 @@ export const ReportDetails = ({ report, ratingCount }: ReportDetailsProps) => {
   };
 
   const hasCoords = !!(report.location?.latitude && report.location?.longitude);
+  const status = report.status;
+  const showAdminSection = status === "in_progress" || status === "resolved";
+  const showValidated = status === "in_progress" || status === "resolved";
+  const showResolved = status === "resolved";
 
   return (
-    <View style={styles.reportCard}>
+    <View style={styles.reportCard}>      
       {/* Header */}
       <View style={styles.headerSection}>
         <View style={styles.userInfo}>
@@ -170,26 +172,22 @@ export const ReportDetails = ({ report, ratingCount }: ReportDetailsProps) => {
         <View style={styles.locationSection}>
           <Text variant="titleSmall" style={styles.sectionTitle}>Location</Text>
           <Text variant="bodyMedium" style={styles.locationText}>{locationString}</Text>
-
-          {/* Map button intentionally removed — kept in case you want to re-enable:
-          <Button mode="outlined" icon="map" onPress={openMap} disabled={!hasCoords} style={styles.mapButton}>
-            View on Map
-          </Button>
-          */}
         </View>
       )}
 
       {/* Admin */}
-      {(report.validated_by || report.resolved_by) && (
+      {showAdminSection && (
         <View style={styles.adminSection}>
           <Text variant="titleSmall" style={styles.sectionTitle}>Administration</Text>
-          {report.validated_by && (
+          {/* Validated By */}
+          {showValidated && report.validated_by && (
             <View style={styles.adminItem}>
               <Text variant="bodySmall" style={styles.adminLabel}>Validated by:</Text>
               <Text variant="bodySmall" style={styles.adminValue}>{getUserDisplayName(report.validated_by)}</Text>
             </View>
           )}
-          {report.resolved_by && (
+          {/* Resolved By */}
+          {showResolved && report.resolved_by && (
             <View style={styles.adminItem}>
               <Text variant="bodySmall" style={styles.adminLabel}>Resolved by:</Text>
               <Text variant="bodySmall" style={styles.adminValue}>{getUserDisplayName(report.resolved_by)}</Text>
