@@ -2,7 +2,7 @@
 
 [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/) [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/) [![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/) [![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-Mobile/Web app for reporting and viewing community issues in Puerto Rico. Built with React Native (Expo), Flask, PostgreSQL, and Docker. Hosted on Heroku and Netlify.
+Mobile/Web app for reporting and viewing community issues in Puerto Rico. Built with React Native (Expo), Flask, PostgreSQL, and Docker. Hosted using Heroku and Netlify; live application at https://reporte-ciudadano-uprm.netlify.app/.
 
 ## Overview
 
@@ -18,7 +18,7 @@ Reporte Ciudadano is a mobile/web application for submitting and tracking commun
 
 ## Quick Start
 
-### Prerequisites
+### Prerequisites (local version)
 
 - Node.js (latest version)
 - Python (latest version)
